@@ -22,19 +22,19 @@ Si nunca has jugado Sudoku, el objetivo es rellenar una cuadrícula de 9x9 espac
 
 **Restricciones**
 
-- La regla de la fila (Horizontal): En cada una de las 9 filas horizontales, no puede haber números repetidos. Cada número del 1 al 9 debe aparecer exactamente una vez.
+- **La regla de la fila (Horizontal):** En cada una de las 9 filas horizontales, no puede haber números repetidos. Cada número del 1 al 9 debe aparecer exactamente una vez.
 
-- La Regla de la Columna (Vertical): Lo mismo aplica para las columnas. En cada línea vertical, los números no pueden repetirse.
+- **La Regla de la Columna (Vertical):** Lo mismo aplica para las columnas. En cada línea vertical, los números no pueden repetirse.
 
-- La Regla del Cuadrante (Caja de 3x3): El tablero grande está dividido por líneas más gruesas en 9 cajas pequeñas de $3 \times 3$ espacios. Dentro de cada una de esas cajas, también deben estar los números del 1 al 9 sin repetirse.
+- **La Regla del Cuadrante (Caja de 3x3):** El tablero grande está dividido por líneas más gruesas en 9 cajas pequeñas de $3 \times 3$ espacios. Dentro de cada una de esas cajas, también deben estar los números del 1 al 9 sin repetirse.
 
 **Niveles de dificultad**
 
-Fácil: Tablero inicial con mayor cantidad de pistas.
+1. Fácil: Tablero inicial con mayor cantidad de pistas.
 
-Intermedio: Cantidad moderada de pistas.
+2. Intermedio: Cantidad moderada de pistas.
 
-Avanzado: Pocas pistas iniciales, requiriendo técnicas de deducción complejas.
+3. Avanzado: Pocas pistas iniciales, requiriendo técnicas de deducción complejas.
 
 ## 5. Explicación de reglas lógicas
 
