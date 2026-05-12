@@ -1,1 +1,5 @@
-	Realizar fork al repositorio e incluir nueva carpeta con el nombre del juego escogido, así como la lista de nombres del equipo
+Integrantes:
+Erick Rosado Verdugo
+Luis Enrique Flores Juárez
+Juego:
+Busqueda del tesoro
