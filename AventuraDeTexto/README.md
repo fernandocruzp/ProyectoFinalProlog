@@ -1,1 +1,8 @@
-	Realizar fork al repositorio e incluir nueva carpeta con el nombre del juego escogido, así como la lista de nombres del equipo
+Juego: Aventura de Texto
+
+Integrantes:
+
+Andrade Castañeda Angel
+Nolasco Flores Micael
+Núñez Hernández Leonardo Daniel
+Urrutia Alfaro Isaac Arturo
