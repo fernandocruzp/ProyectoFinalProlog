@@ -18,11 +18,15 @@ Este proyecto es una implementación interactiva del juego Sudoku desarrollada e
 
 ## 4. Reglas del juego
 
-El objetivo, es rellenar un tablero de 9x9 con solamente números del 1 al 9.
+Si nunca has jugado Sudoku, el objetivo es rellenar una cuadrícula de 9x9 espacios con números del 1 al 9.
 
 **Restricciones**
 
-No se puede repetir un número en la misma fila, columna ni en la misma subcuadrícula de 3x3.
+- La regla de la fila (Horizontal): En cada una de las 9 filas horizontales, no puede haber números repetidos. Cada número del 1 al 9 debe aparecer exactamente una vez.
+
+- La Regla de la Columna (Vertical): Lo mismo aplica para las columnas. En cada línea vertical, los números no pueden repetirse.
+
+- La Regla del Cuadrante (Caja de 3x3): El tablero grande está dividido por líneas más gruesas en 9 cajas pequeñas de $3 \times 3$ espacios. Dentro de cada una de esas cajas, también deben estar los números del 1 al 9 sin repetirse.
 
 **Niveles de dificultad**
 
