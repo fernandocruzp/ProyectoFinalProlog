@@ -40,3 +40,43 @@ tablero(dificil, [
     [7, 0, 0, 0, 4, 0, 3, 0, 0],
     [5, 0, 0, 2, 0, 0, 0, 0, 0]
 ]).
+
+% Reglas del Sudoku
+
+% Regla de fila: todos los números en una fila deben ser únicos
+% Predicado que valida que no hay duplicados en una fila (lista)
+fila_valida([]).
+fila_valida([H|T]) :-
+    (H == 0 -> true ; \+ member(H, T)),
+    fila_valida(T).
+
+% Predicado que verifica que la regla de la fila se cumple para toda fila
+filas_validas([]).
+filas_validas([Fila|Filas]) :-
+    fila_valida(Fila),
+    filas_validas(Filas).
+
+% Regla de columna: todos los números en una columna deben ser únicos
+% Predicado que valida que no hay duplicados en una columna
+columna(_, [], []).
+columna(N, [Fila|Filas], [Elem|Columna]) :-
+    nth1(N, Fila, Elem),
+    columna(N, Filas, Columna).
+
+% Predicado que verifica que la regla de la columna se cumple para toda columna
+columnas_validas(Tablero) :-
+    length(Tablero, 9),
+    columnas_validas_aux(1, Tablero).
+
+% Predicado auxiliar para columnas_validas
+% caso base: cuando N es 10 ya se checaron todas las columnas
+columnas_validas_aux(10, _) :- !.
+% caso recursivo: checar la columna N y pasar a la siguiente
+columnas_validas_aux(N, Tablero) :-
+    % extraer la columna número N del tablero
+    columna(N, Tablero, Col),
+    % checar que esa columna no tenga duplicados
+    fila_valida(Col),
+    N1 is N + 1,
+    % llamar recursivamente para la siguiente columna
+    columnas_validas_aux(N1, Tablero).
