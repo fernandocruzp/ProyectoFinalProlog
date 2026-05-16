@@ -6,14 +6,14 @@ Este proyecto es una implementación interactiva del juego Sudoku desarrollada e
 
 ## 2. Integrantes
 
-- Kiyomi Amanda Martinez Sasaguri
+- Espino Gutiérrez Alejandro (322069512)
 
-- Andrea Lucia Olmos Ortiz
+- Martínez Sasaguri Kiyomi Amanda (322272929)
 
-- Alexa Reynoso Ascencio
+- Olmos Ortiz Andrea Lucia (322149977)
 
-- Alejandro Espino Gutierrez
-
+- Reynoso Ascencio Alexa (322179457)
+ 
 ## 3. Instrucciones de uso
 
 ## 4. Reglas del juego
