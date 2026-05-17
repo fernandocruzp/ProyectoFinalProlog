@@ -80,3 +80,55 @@ columnas_validas_aux(N, Tablero) :-
     N1 is N + 1,
     % llamar recursivamente para la siguiente columna
     columnas_validas_aux(N1, Tablero).
+
+% Regla del cuadrante: todos los números en una caja 3x3 deben ser únicos
+% Predicado que extrae una caja 3x3
+caja(FilaInicio, ColInicio, Tablero, Caja) :-
+    % vamos a usar findall, que recorre todas las combinaciones posibles y las agrega en una lista
+    findall(Elem,
+        % generar todas las combinaciones posibles para una caja 3x3
+        (between(0, 2, Fila),
+         % Col va de 0, 1, 2 (3 columnas)
+         between(0, 2, Col),
+         F is FilaInicio + Fila,
+         C is ColInicio + Col,
+         % obtenemos la fila del tablero en la posición F 
+         nth0(F, Tablero, FilaTablero),
+         % obtenemos el elemento en la columna C de esa fila
+         nth0(C, FilaTablero, Elem)),
+        % todos los elementos extraídos los agregamos en la lista Caja
+        Caja).
+
+% Predicado que verifica que la regla del cuadrante se cumple para toda caja
+cajas_validas(Tablero) :-
+    cajas_validas_aux(0, 0, Tablero).
+
+% Predicado auxiliar para cajas_validas
+% caso base: cuando FilaInicio es 9, ya se checaron todas las filas de cajas 
+cajas_validas_aux(9, _, _) :- !.
+
+% caso recursivo: cuando ColInicio es 9, ya se checaron todas las columnas de la fila actual, pasar a la siguiente fila de cajas
+cajas_validas_aux(FilaInicio, 9, Tablero) :-
+    !,
+    % calcular la siguiente fila de cajas (sumar 3)
+    NextFila is FilaInicio + 3,
+    % reiniciar la columna a 0 para la siguiente fila
+    cajas_validas_aux(NextFila, 0, Tablero).
+
+% caso recursivo: checar la caja actual y pasar a la siguiente
+cajas_validas_aux(FilaInicio, ColInicio, Tablero) :-
+    % extraer la caja 3x3 en la posición (FilaInicio, ColInicio)
+    caja(FilaInicio, ColInicio, Tablero, Caja),
+    % checar que no haya duplicados en esa caja
+    fila_valida(Caja),
+    % calcular la siguiente columna de cajas (sumar 3)
+    NextCol is ColInicio + 3,
+    % llamar recursivamente para la siguiente caja en la misma fila
+    cajas_validas_aux(FilaInicio, NextCol, Tablero).
+
+% Predicado para verificar si un sudoku es válido (cumple todas las reglas)
+sudoku_valido(Tablero) :-
+    filas_validas(Tablero),
+    columnas_validas(Tablero),
+    cajas_validas(Tablero).
+
