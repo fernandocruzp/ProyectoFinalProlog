@@ -70,3 +70,8 @@ gana(Tablero, J) :-
     obtener_ficha(Tablero, C1, F1, J),
     obtener_ficha(Tablero, C2, F2, J),
     obtener_ficha(Tablero, C3, F3, J).
+
+% 5. Generación de movimientos válidos
+% movimientos_validos(+Tablero, +Jugador, -ListaColumnas)
+movimientos_validos(Tablero, _, ListaColumnas) :-
+    findall(Col, (between(1, 7, Col), nth1(Col, Tablero, Column), length(Column, L), L < 6), ListaColumnas).
