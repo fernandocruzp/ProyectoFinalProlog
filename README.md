@@ -53,5 +53,55 @@ T2 = [[x], [o], [], [], [], [], []].
 % 4. Verificar si alguien ganó
 ?- estado_ganador(T2, x).
 false
+==================================================================================================================================
 
+## Guía de Pruebas en SWI-Prolog
+
+Una vez cargado el archivo con `swipl juego.pl`, puedes utilizar las siguientes consultas para verificar las reglas lógicas del juego:
+
+### 1. Inicialización y Movimientos Básicos
+Sirve para crear el estado inicial y verificar que las fichas caen correctamente en las columnas.
+
+* **Iniciar un tablero vacío:**
+  `?- tablero_inicial(T).`
+* **Realizar un movimiento (Ficha 'x' en Columna 1):**
+  `?- tablero_inicial(T), mover(T, x, 1, T1).`
+* **Ver el tablero dibujado:**
+  `?- tablero_inicial(T), mover(T, x, 1, T1), visualizar(T1).`
+
+### 2. Validación de Victorias (Casos de Prueba)
+Copia y pega estas consultas completas para probar que el motor de reglas detecta los ganadores:
+
+* **Victoria Vertical (Columna 1):**
+  `tablero_inicial(T), mover(T, x, 1, T1), mover(T1, x, 1, T2), mover(T2, x, 1, T3), mover(T3, x, 1, T4), visualizar(T4), gana(T4, x).`
+* **Victoria Horizontal (Fila base):**
+  `tablero_inicial(T), mover(T, o, 1, T1), mover(T1, o, 2, T2), mover(T2, o, 3, T3), mover(T3, o, 4, T4), visualizar(T4), gana(T4, o).`
+* **Victoria Diagonal Ascendente (/):**
+  `tablero_inicial(T), mover(T, x, 1, T1), mover(T1, o, 2, T2), mover(T2, x, 2, T3), mover(T3, o, 3, T4), mover(T4, o, 3, T5), mover(T5, x, 3, T6), mover(T6, o, 4, T7), mover(T7, o, 4, T8), mover(T8, o, 4, T9), mover(T9, x, 4, T10), visualizar(T10), gana(T10, x).`
+
+### 3. Reglas de Validación y Estado del Tablero
+* **Verificar si una columna está llena (Falla si hay 6 fichas):**
+  `nth1(IndiceColumna, Tablero, Col), length(Col, L), L < 6.`
+* **Saber si el tablero está en empate (Todas las columnas llenas):**
+  `forall(member(Col, Tablero), length(Col, 6)).`
+* **Encontrar movimientos legales (Backtracking):**
+  `between(1, 7, C), mover(TableroActual, x, C, _).`
+
+  ### 4. Generación de Movimientos Válidos 
+Tal como lo solicitan los lineamientos del proyecto, el programa es capaz de calcular dinámicamente qué columnas tienen espacios disponibles mediante el uso de *backtracking* y recolección de soluciones (`findall/3`).
+
+* **Consulta para obtener la lista de columnas disponibles:**
+  ```prolog
+  ?- tablero_inicial(T), movimientos_validos(T, x, Lista).
+ ** Resultado esperado:
+Lista = [1, 2, 3, 4, 5, 6, 7].
+
+Si llenamos la columna 3 con 6 fichas consecutivas y volvemos a consultar los movimientos válidos:
+?- tablero_inicial(T), 
+   mover(T, x, 3, T1), mover(T1, o, 3, T2), mover(T2, x, 3, T3), 
+   mover(T3, o, 3, T4), mover(T4, x, 3, T5), mover(T5, o, 3, T6), 
+   movimientos_validos(T6, x, Lista).
+
+Resultado esperado:
+Lista = [1, 2, 4, 5, 6, 7].
 
