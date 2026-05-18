@@ -87,3 +87,21 @@ Copia y pega estas consultas completas para probar que el motor de reglas detect
 * **Encontrar movimientos legales (Backtracking):**
   `between(1, 7, C), mover(TableroActual, x, C, _).`
 
+  ### 4. Generación de Movimientos Válidos 
+Tal como lo solicitan los lineamientos del proyecto, el programa es capaz de calcular dinámicamente qué columnas tienen espacios disponibles mediante el uso de *backtracking* y recolección de soluciones (`findall/3`).
+
+* **Consulta para obtener la lista de columnas disponibles:**
+  ```prolog
+  ?- tablero_inicial(T), movimientos_validos(T, x, Lista).
+ ** Resultado esperado:
+Lista = [1, 2, 3, 4, 5, 6, 7].
+
+Si llenamos la columna 3 con 6 fichas consecutivas y volvemos a consultar los movimientos válidos:
+?- tablero_inicial(T), 
+   mover(T, x, 3, T1), mover(T1, o, 3, T2), mover(T2, x, 3, T3), 
+   mover(T3, o, 3, T4), mover(T4, x, 3, T5), mover(T5, o, 3, T6), 
+   movimientos_validos(T6, x, Lista).
+
+Resultado esperado:
+Lista = [1, 2, 4, 5, 6, 7].
+
