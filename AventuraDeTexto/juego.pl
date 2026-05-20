@@ -345,10 +345,10 @@ procesar(Estado, Entrada, _) :-
 % auxiliares que sirven para probar el juego
 
 % las usamos así : 
-%    ?- estado_inicial(E), movimientos_validos(E, M).
-%    ?- estado_inicial(E), accion(E, leer_papel, Nuevo).
-%    ?- estado_final_prueba(F), fin_juego(F, Final).
-%    ?- pistas_en([pista_papel, pista_lab], N).
+%    ?- estadoInicial(E), movimientosValidos(E, M).
+%    ?- estado_inicial(E), accion(E, leerPapel, Nuevo).
+%    ?- estadoFinalPrueba(F), finJuego(F, Final).
+%    ?- pistasEn([pistaPapel, pistaLab], N).
 % ============================================================
 
 
