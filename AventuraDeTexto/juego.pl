@@ -20,6 +20,25 @@
 % - Se propone camelCase
 % - Uso de palabra especial "«|»" para encontrar de manera más sencilla las secciones 
 
+
+%  Persona 1 — el cuarto y el pasillo
+%    - Expandir describir/1 para cuarto y pasillo
+%    - Agregar más accionDisponibleCuarto y accionDisponiblePasillo
+%    - Agregar más cláusulas accion/3 para esos lugares
+%
+%  Persona 2 — la facultad: lab, biblioteca, cafetería
+%    - Implementar describir/1 para esos lugares
+%    - Implementar accionesValidas para esos lugares
+%    - Agregar sus accion/3 correspondientes
+%
+%  Persona 3 — Finales y stats
+%    - Ampliar fin_juego/2 con más condiciones y texto
+%    - Agregar más colapsos esposibles
+%    - Ajustar el balance de los stats si hace falta
+%
+%  Isaac completará el README y la documentación necesaria pq ya hizo este inicio de todo el código
+%
+
 % --------------------------------------------------------------------------------------------
 
 % AVENTURA DE TEXTO
@@ -35,6 +54,9 @@
 % puede cambiar en tiempo de ejecución con assert/retract, es para recordar algo entre turnos
 
 :- dynamic visitado/1.
+
+% Predicados auxiliares
+miembro(X, L) :- member(X, L).
 % Especificamente en este caso para ver si un lugar ya fue visitado.
 
 
@@ -164,7 +186,7 @@ accion(estado(pasillo, Inv, Stats, T), salirCalle,
     write('Bajas y sales a la calle.'), nl.
 
 accion(estado(pasillo, Inv, stats(S, E, C), T), hablarConRodrigo,
-       estado(pasillo, [rodrigo_hablo | Inv], stats(S, E1, C), T1)) :-
+       estado(pasillo, [rodrigoHablo | Inv], stats(S, E1, C), T1)) :-
     \+ miembro(rodrigoHablo, Inv),
     E1 is min(3, E + 1),
     T1 is T + 1,
@@ -184,7 +206,7 @@ accion(estado(pasillo, Inv, stats(S, E, C), T), hablarConRodrigo,
 finJuego(estado(fin, Inv, stats(_, E, C), _), final_secreto) :-
     miembro(pista_papel, Inv),
     miembro(pista_conserje, Inv),
-    memmiembrober(pista_lab, Inv),
+    miembro(pista_lab, Inv),
     miembro(usb, Inv),
     C >= 2, E < 3, !,
     nl,
@@ -234,3 +256,123 @@ colapso(estado(Ubi, _, stats(0, _, _), _)) :-
 
 
 % «|» SECCIÓN 8 - ciclo principal del juego
+% ciclo/1 es recursivo:
+%      1. Revisa si el juego terminó  -> muestra final y para
+%      2. Revisa si hubo colapso -> muestra mensaje y para
+%      3. Muestra opciones disponibles
+%      4. Lee la acción del jugador con read/1
+%      5. La procesa con procesar/3
+%      6. Llama a ciclo/1 con el nuevo estado (recursión)
+%
+
+
+jugar :-
+    retractall(visitado(_)), % limpia memoria de visitas anteriores
+    estadoInicial(E0),
+    nl,
+    write('=== EL PAPEL MISTERIOSO ==='), nl,
+    write('Escribe una acción y termina con punto. Ej: leer_papel.'), nl,
+    write('Comandos especiales: estado.  ayuda.  salir.'), nl,
+    nl,
+    describir(E0),
+    ciclo(E0).
+
+% caso 1 - el juego llegó al estado fin → mostrar final
+ciclo(Estado) :-
+    Estado = estado(fin, _, _, _), !,
+    finJuego(Estado, _).
+
+% caso 2 - hubo colapso anticipado -> terminar
+ciclo(Estado) :-
+    colapso(Estado), !.
+
+% caso 3 - turno normal -> pedir acción
+ciclo(Estado) :-
+    accionesValidas(Estado, Acciones),
+    nl,
+    write('¿Qué haces?'), nl,
+    forall(miembro(A, Acciones), (write('  > '), write(A), nl)),
+    nl,
+    read(Entrada),
+    procesar(Estado, Entrada, Acciones).
+
+
+
+% «|» SECCIÓN 9 - procesador de entrada
+% procesar/3 tiene varias cláusulas para comandos especiales
+% y para acciones válidas del juego.
+% de nuevo usamo ! para cortar y que prolog no siga buscando cuando encontró la correcta
+
+% comando especial: ver estado actual
+procesar(Estado, estado, _) :- !,
+    Estado = estado(Ubi, Inv, stats(S,E,C), T),
+    nl,
+    write('--- Estado actual ---'), nl,
+    write('Ubicación: '), write(Ubi), nl,
+    write('Inventario: '), write(Inv), nl,
+    write('Sueño: '), write(S), write('/3'), nl,
+    write('Estrés: '), write(E), write('/3'), nl,
+    write('Conocimiento: '), write(C), write('/3'), nl,
+    write('Turno: '), write(T), nl,
+    ciclo(Estado).
+
+% comando especial: ayuda
+procesar(Estado, ayuda, Acciones) :- !,
+    write('Acciones disponibles:'), nl,
+    forall(miembro(A, Acciones), (write('  > '), write(A), nl)),
+    ciclo(Estado).
+
+% comando especial: salir del juego
+procesar(_, salir, _) :- !,
+    write('Adiooos. Ten cuidado con tus pesadillas.'), nl.
+
+% acción válida del juego
+procesar(Estado, Accion, Acciones) :-
+    miembro(Accion, Acciones),            % está en la lista de opciones
+    accion(Estado, Accion, NuevoEstado), % la transición existe
+    !,
+    describir(NuevoEstado),              % describir el nuevo lugar
+    ciclo(NuevoEstado).                  % siguiente turno
+
+% entrada inválida
+procesar(Estado, Entrada, _) :-
+    write('No puedes hacer eso aquí: '), write(Entrada), nl,
+    write('Escribe "ayuda." para ver las opciones.'), nl,
+    ciclo(Estado).
+
+
+% «|» SECCIÓN 10 - predicados para consulta
+% auxiliares que sirven para probar el juego
+
+% las usamos así : 
+%    ?- estado_inicial(E), movimientos_validos(E, M).
+%    ?- estado_inicial(E), accion(E, leer_papel, Nuevo).
+%    ?- estado_final_prueba(F), fin_juego(F, Final).
+%    ?- pistas_en([pista_papel, pista_lab], N).
+% ============================================================
+
+
+% devuelve las acciones disponibles en un estado dado
+movimientosValidos(Estado, Movimientos) :-
+    accionesValidas(Estado, Movimientos).
+
+% estado de prueba para testear finales directamente
+% se usa así : estadoFinalPrueba(E), finJuego(E, F).
+estadoFinalPrueba(estado(fin,
+    [usb, papelLeido, pistaPapel, pistaConserje, pistaLab],
+    stats(1, 1, 3),
+    15)).
+
+% cuenta cuántas pistas tiene el jugador
+pistasEn(Inv, N) :-
+    include([P]>>(miembro(P, [pistaPapel, pistaConserje, pistaLab])),
+            Inv, Ps),
+    length(Ps, N).
+% usamos la lambda para no tener que usar una función auxiliar
+% el include toma los elementos de P y checa que P sea miembro de la lista
+% osea que checa si P es pistaPapel o pistaConserje o pistaLab, si es alguno lo metemos en Ps
+% finalmente checa el número de pistas encontradas (coincidencia de P guardadas en Ps) y nos da el número en N
+
+
+% Verifica si un estado es un fin de juego
+esEstadoFinal(estado(fin, _, _, _)).
