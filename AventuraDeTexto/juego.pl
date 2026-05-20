@@ -71,5 +71,102 @@ describir(estado(cuarto,Inv,_,_)) :-
 % Podemos hacer un cambio de texto dependiendo de (miembro(algo,Inv) -> write('Si sí está') ; write('Si no está'))
 
 
-% «|» SECCIÓN 3 - acciones disponibles
+% «|» SECCIÓN 4 - acciones disponibles
 % lista de acciones en las que se puede hacer desde cada ubicación.
+
+accionesValidas(estado(cuarto, Inv, stats(_, E, _), _), Acciones) :-
+    findall(A, accionDisponibleCuarto(Inv, E, A), Acciones).
+% findall, para poder tener todas las opciones dispoinles, para no tener que hacerlo como siempre uno por uno
+
+% Siempre disponible en el cuarto
+accionDisponibleCuarto(_,_,salirPasillo).
+
+% Solo si tienes el papel Y no lo has leído
+accionDisponibleCuarto(Inv, _, leerPapel) :-
+    miembro(papel, Inv),
+    \+ miembro(papelLeido, Inv).
+
+% Si el papel leido no está en Inv, entonces \+ hace verdad la proposición, así que pueda continuar y hacer 'leerPapel'
+% Si el papel está leido (en Inv) \+ lo niega y falla, así q no puede leer el papel pq ya lo leyó
+
+% Solo si no tienes el USB
+accionDisponibleCuarto(Inv, _, buscarUsb) :-
+    \+ miembro(usb, Inv).
+% buscamosUSB si la usb no está en el inventario
+
+% sólo si el estrés (E de estrés) es menor a 3
+accionDisponibleCuarto(Inv, E, tomarCafe) :-
+    miembro(cafe, Inv), E < 3.
+
+% # FALTAN
+
+% Acciones desde el pasillo
+accionesValidas(estado(pasillo, Inv, _, _), Acciones) :-
+    findall(A, accionDisponiblePasillo(Inv, A), Acciones).
+
+accionDisponiblePasillo(_, salirCalle).
+accionDisponiblePasillo(Inv, hablarConRodrigo) :-
+    \+ miembro(rodrigoHablo, Inv).
+
+
+% «|» SECCIÓN 5 - TRANSiciones
+% define cómo cambia el estado.
+%
+% accion(EstadoActual, NombreAccion, EstadoNuevo)
+%
+%    Modificar stats:
+%      S1 is min(3, S + 1)  → sube sin pasar de 3
+%      E1 is max(0, E - 1)  → baja sin pasar de 0
+%    Modificar inventario:
+%      [nuevo_objeto | Inv]  → agregar objeto
+%      delete(Inv, objeto, Inv2)  → quitar objeto
+
+% --- CUARTO ---
+
+accion(estado(cuarto, Inv, Stats, T), salirPasillo,
+       estado(pasillo, Inv, Stats, T1)) :-
+    % Solo aumenta el turno, no cambia nada más
+    T1 is T + 1,
+    write('Sales al pasillo.'), nl.
+
+accion(estado(cuarto, Inv, stats(S, E, C), T), leerPapel,
+       estado(cuarto, [papelLeido, pistaPapel | Inv2], stats(S, E, C1), T1)) :-
+    % quitamos 'papel' del inventario y agregamos 'papel_leido' y 'pista_papel'
+    miembro(papel, Inv),
+    delete(Inv, papel, Inv2),
+    C1 is min(3, C + 1),   % sube conocimiento
+    T1 is T + 1,
+    write('El papel dice: "Ve al lab de cómputo antes de las 8am."'), nl,
+    write('[+ Conocimiento]'), nl.
+
+accion(estado(cuarto, Inv, stats(S, E, C), T), buscarUsb,
+       estado(cuarto, Inv, stats(S, E1, C), T1)) :-
+    \+ miembro(usb, Inv),
+    E1 is min(3, E + 1),   % sube estrés porque no lo encuentras
+    T1 is T + 1,
+    write('No está. El estrés sube.'), nl,
+    write('[+ Estrés]'), nl.
+
+accion(estado(cuarto, Inv, stats(S, E, C), T), tomarCafe,
+       estado(cuarto, Inv, stats(S1, E1, C), T1)) :-
+    miembro(cafe, Inv), E < 3,
+    S1 is min(3, S + 1),
+    E1 is min(3, E + 1),
+    T1 is T + 1,
+    write('El café te activa. Te tiembla un poco la mano.'), nl,
+    write('[+Sueño] [+Estrés]'), nl.
+
+% --- PASILLO ---
+
+accion(estado(pasillo, Inv, Stats, T), salirCalle,
+       estado(calle, Inv, Stats, T1)) :-
+    T1 is T + 1,
+    write('Bajas y sales a la calle.'), nl.
+
+accion(estado(pasillo, Inv, stats(S, E, C), T), hablarConRodrigo,
+       estado(pasillo, [rodrigo_hablo | Inv], stats(S, E1, C), T1)) :-
+    \+ member(rodrigoHablo, Inv),
+    E1 is min(3, E + 1),
+    T1 is T + 1,
+    write('"Se dice que Vlad canceló..." Rodrigo se va antes de que preguntes.'), nl,
+    write('[+Estrés]'), nl.
