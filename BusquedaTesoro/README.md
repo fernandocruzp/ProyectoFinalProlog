@@ -31,10 +31,7 @@ Ejecuta de forma secuencial la limpieza de partidas anteriores (limpiar_estado),
 * lugares.
 Qué hace: Invoca el predicado mostrar_lugares/0. Utiliza forall/2 para iterar sobre los hechos lugar(Nombre, _, _). Imprime en la terminal una lista de los nombres de las 20 ubicaciones en la Facultad.
 
-* ir(lugar).
-Permite al jugador cambiar de posición yendo a otra ubicación del mapa. 
-
-Recibe como argumento el destino deseado (por ejemplo, ir(biblioteca).). Primero se valida que el lugar exista en los hechos del programa; si es válido, retira la ubicación vieja mediante retract y asienta la nueva con assertz. Al actualizar la posición del jugador, analiza si en la nueva coordenada hay un objeto  para añadirlo al inventario (revisar_objetos) y calcula la distancia al cofre para actualizar la pista de temperatura.
+* ir(lugar). Permite al jugador cambiar de posición yendo a otra ubicación del mapa. Recibe como argumento el destino deseado (por ejemplo, ir(biblioteca).). Primero se valida que el lugar exista en los hechos del programa; si es válido, retira la ubicación vieja mediante retract y asienta la nueva con assertz. Al actualizar la posición del jugador, analiza si en la nueva coordenada hay un objeto  para añadirlo al inventario (revisar_objetos) y calcula la distancia al cofre para actualizar la pista de temperatura.
 
 * estado.
 Imprime en qué parte de la facultad te encuentras, evalúa la distancia hacia el cofre para la pista (HIRVIENDO, CALIENTE, TIBIO, FRIO o HELADO) y notifica si hay algún personaje interactuable en la posición que te encuentras.
