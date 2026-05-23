@@ -1,3 +1,6 @@
+
+
+
 % =============================================================================
 % Lógica Computacional 2026-2
 % Proyecto Final: Battleship
@@ -157,16 +160,27 @@ jugar :-
     limpiar_tableros,
     tablero_inicial(Vacio),
     
-    % Generamos una flota de 4 barcos de tamaños aleatorios (2 o 3) para la computadora
+    % 1. Generamos los barcos de la computadora
     generar_flota_aleatoria(Vacio, 4, TC),
     asserta(tablero_computadora(TC)),
     
+    % 2. Generamos tus propios 4 barcos aleatorios
+    generar_flota_aleatoria(Vacio, 4, TJ),
+    asserta(tablero_jugador(TJ)),
+    
     writeln('¡Bienvenido a Batalla Naval en Prolog!'),
-    writeln('Se han desplegado 4 barcos enemigos (de tamaños 2 y 3) en posiciones aleatorias.'),
+    writeln('Se han desplegado ambos tableros con 4 barcos aleatorios (tamaños 2 y 3).'),
     ciclo_juego.
 
 ciclo_juego :-
     tablero_computadora(T),
+    tablero_jugador(TJ), % <--- Recuperamos tu tablero de la memoria
+    
+    writeln('\n===================================='),
+    writeln('TU TABLERO ACTUAL (Tus barcos):'),
+    mostrar_tablero(TJ), % <--- Aquí sí mostramos las 's' de tus barcos
+    writeln('===================================='),
+    
     writeln('\nEstado actual del radar enemigo:'),
     mostrar_tablero_oculto(T),
     
