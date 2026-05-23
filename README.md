@@ -1,8 +1,8 @@
 	Realizar fork al repositorio e incluir nueva carpeta con el nombre del juego escogido, así como la lista de nombres del equipo
 # Nim - Proyecto Final de Lógica Computacional
 ## Integrantes del Equipo
-Diego Hernández Gómez
+Carlos Joel de la Rosa Hernández - 319229185
 
-León Bautista Yahir
+Diego Hernández Gómez - 321069942
 
-de la Rosa Hernandez Carlos Joel
+Yahir León Bautista - 322176542
