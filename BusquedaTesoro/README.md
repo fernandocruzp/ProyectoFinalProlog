@@ -18,52 +18,52 @@ Integrantes de Equipo "Albert y Einstein"
 
 4. Realizar las consultas para jugar:
 
-Una vez compilado el juego inicia con el predicado  jugar/0.
+Una vez compilado el juego inicia con el predicado  iniciar/0.
 
-?- jugar.
+?- iniciar.
 
 Comandos a usar por el jugador:
 Nota: todo debe ser escrito en minúscula y si hay espacios deberá usarse el guión bajo (_), y terminar con un punto (.).
 
-iniciar.
-Ejecuta de forma secuencial la limpieza de partidas anteriores (limpiar_estado), distribuye aleatoriamente los objetos y el cofre por el mapa, evalúa el estado de Onid y posiciona al jugador en la ubicación inicial "media_luna". También, despliega la introducción del juego.
+* iniciar.
+Ejecuta de forma secuencial la limpieza de partidas anteriores (limpiar_estado), distribuye aleatoriamente los objetos y el cofre por el mapa y posiciona al jugador en la ubicación inicial "media_luna". También, despliega la introducción del juego.
 
-lugares.
+* lugares.
 Qué hace: Invoca el predicado mostrar_lugares/0. Utiliza forall/2 para iterar sobre los hechos lugar(Nombre, _, _). Imprime en la terminal una lista de los nombres de las 20 ubicaciones en la Facultad.
 
-ir(lugar).
+* ir(lugar).
 Permite al jugador cambiar de posición yendo a otra ubicación del mapa. 
 
 Recibe como argumento el destino deseado (por ejemplo, ir(biblioteca).). Primero se valida que el lugar exista en los hechos del programa; si es válido, retira la ubicación vieja mediante retract y asienta la nueva con assertz. Al actualizar la posición del jugador, analiza si en la nueva coordenada hay un objeto  para añadirlo al inventario (revisar_objetos) y calcula la distancia al cofre para actualizar la pista de temperatura.
 
-estado.
-Imprime en qué parte de la facultad te encuentras, evalúa la distancia hacia el cofre para la pista (HIRVIENDO, CALIENTE, TIBIO, FRIO o HELADO) y notifica si hay algún personaj interactuable en la posición que te encuentras.
+* estado.
+Imprime en qué parte de la facultad te encuentras, evalúa la distancia hacia el cofre para la pista (HIRVIENDO, CALIENTE, TIBIO, FRIO o HELADO) y notifica si hay algún personaje interactuable en la posición que te encuentras.
 
-inventario.
+* inventario.
 Si el jugador ha recogido objetos, despliega una lista de los objetos que posee, En caso de no contar con ningún elemento en ese momento, devuelve el mensaje "Inventario vacio.".
 
-hablar(Persona).
+* hablar(Persona).
 Interactua con los aliados de las distintas ubicaciones (Debes estar en la misma ubicación que con el que deseas interactuar).
 
-hablar(onid). (oficina_onid): Si posees la coca_cola, se la entregas y el programa calcula un número entre 1 y 100; si el resultado es >=35, te revela la ubicación del cofre.
+* hablar(onid). (oficina_onid): Si posees la coca_cola, se la entregas, el programa calcula un número entre 1 y 100; si el resultado es >=35, te revela la ubicación del cofre.
 
-hablar(amoni). (aula_t): Si traes el plumon, ella dibuja un mapa en el pizarrón que ejecuta descartar_ubicaciones/0, eliminando dos lugares donde el cofre no está.
+* hablar(amoni). (aula_t): Si traes el plumon, ella dibuja un mapa en el pizarrón que ejecuta descartar_ubicaciones/0, eliminando dos lugares donde el cofre no está.
 
-hablar(nanfredo). (laboratorio_simbolicos): Al entregarle el control_proyector, asienta el hecho inteligencia_maxima, permitiéndote alterar las complejas preguntas de la batalla final por operaciones aritméticas sencillas.
+* hablar(nanfredo). (laboratorio_simbolicos): Al entregarle el control_proyector, asienta el hecho inteligencia_maxima, permitiéndote alterar las complejas preguntas de la batalla final por tautologias sencillas.
 
-hablar(desarrolladores). (En crujipollo): Les das de la coca_cola por un pato_hule.
+* hablar(estudiantes). (En crujipollo): Les das de la coca_cola por un pato_hule.
 
-buscar.
+* buscar.
 Busca si la posición del jugador es la misma que la del cofre, si coinciden, se invoca la batalla final,
 Si el usuario ejecuta este comando en cualquier coordenada sin el cofre, el programa responderá que no hay nada sospechoso.
 
-usar(Objeto).
+* usar(Objeto).
 Qué hace: Verifica si el objeto a usar existe en el inventario. inventario(Objeto). Si lo posees, el objeto se utiliza con el aliado correspondiente. Si no se encuentra en tus registros, arroja una advertencia indicando que no posees el objeto.
 
-ayuda.
+* ayuda.
 Despliega en la pantalla de la terminal un menú con la sintaxis exacta de los comandos del juego, sirviendo como guía en cualquier momento de la partida.
 
-salir.
+* salir.
 Qué hace: Termina la sesión actual del juego de manera limpia. Imprime un mensaje de despedida y ejecuta halt/0, la cual cierra el intérprete de SWI-Prolog.
 
 Nota de sintaxis para el manual: Es fundamental recordar al lector que, por la naturaleza sintáctica de Prolog, cada uno de estos comandos debe escribirse en minúsculas y finalizarse estrictamente con un punto (.) para que el flujo interactivo del predicado read/1 pueda procesar la instrucción.
