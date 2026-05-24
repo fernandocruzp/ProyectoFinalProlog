@@ -67,6 +67,34 @@ juego(Tablero, Actual, Otro) :-
     ).
 
 % -----------------------------
+% Pedir movimiento al jugador.
+% Lee una linea escrita por el usuario, por ejemplo: 2 3
+% El primer numero representa la fila y el segundo la cantidad de palillos a tomar.
+% -----------------------------
+movimiento(Fila, Tomar) :-
+    write('Escribe tu movimiento como "fila cantidad": '),
+    flush_output,
+    read_line_to_string(user_input, Entrada),
+    entrada_a_movimiento(Entrada, Fila, Tomar).
+
+% -----------------------------
+% Convertir la entrada del usuario en dos numeros enteros.
+% Por ejemplo, convierte el texto "2 3" en Fila = 2 y Tomar = 3.
+% Si el formato no es correcto, este predicado falla y el movimiento queda invalido.
+% -----------------------------
+entrada_a_movimiento(Entrada, Fila, Tomar) :-
+    Entrada \= end_of_file,
+    normalize_space(string(Limpia), Entrada),
+    split_string(Limpia, " \t", " \t", Partes),
+    Partes = [FilaTexto, TomarTexto],
+    catch(number_string(FilaNumero, FilaTexto), _, fail),
+    catch(number_string(TomarNumero, TomarTexto), _, fail),
+    integer(FilaNumero),
+    integer(TomarNumero),
+    Fila = FilaNumero,
+    Tomar = TomarNumero.
+
+% -----------------------------
 % Validar y aplicar jugada.
 % Se valida que Fila y Tomar sean enteros, Fila debe estar entre 1 y 3, Tomar debe ser >= 1 y <= cantidad de palillos de la fila, finalmente si se cumple con lo anterior se resta Tomar a la cantidad de palillos a la Fila pedida y se genera NuevoTablero con esa fila actualizada.
 % -----------------------------
