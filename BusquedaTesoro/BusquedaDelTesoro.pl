@@ -315,3 +315,25 @@ verificar_tesoro.
     hablar(_) :-
         nl,
         write("No puedes hablar con nadie aqui."), nl.
+
+/*
+ Lógica para las habilidades de Amoni
+*/
+    descartar_ubicaciones :-
+        tesoro_en(Tesoro), % Obtiene la ubicación del tesoro
+        findall(L,
+            (
+                lugar(L, _, _), % Obtiene la lista de lugares disponibles
+                L \= Tesoro % Filtra la lista para excluir la ubicación del tesoro
+            ),
+            Lista % Genera una lista de lugares descartando la ubicación del tesoro
+        ),
+        random_member(A, Lista), % Selecciona una ubicación aleatoria de la lista de lugares descartados
+        random_member(B, Lista), % Selecciona otra ubicación aleatoria de la lista de lugares descartados
+        A \= B, % Asegura que las dos ubicaciones seleccionadas sean diferentes
+        assertz(pista_descartada(A)), % Añade la primera ubicación descartada al estado del juego
+        assertz(pista_descartada(B)), % Añade la segunda ubicación descartada al estado del juego
+        % Imprime los lugares descartados
+        write("Amoni revela que el tesoro NO esta en:"), nl,
+        write('- '), write(A), nl,
+        write('- '), write(B), nl.
