@@ -119,3 +119,12 @@ reemplazar_nth1([X | Xs], Fila, Nuevo, [X | X1]) :-
     Fila > 1,
     FilaN is Fila - 1,
     reemplazar_nth1(Xs, FilaN, Nuevo, X1).
+
+% -----------------------------
+% mover/4
+% Permite hacer un movimiento directo desde una consulta.
+% Usa validar_mov/4 para revisar si el movimiento es válido
+% y generar el nuevo tablero.
+% -----------------------------
+mover(Tablero, Fila, Tomar, NuevoTablero) :-
+    validar_mov(Tablero, Fila, Tomar, NuevoTablero).
