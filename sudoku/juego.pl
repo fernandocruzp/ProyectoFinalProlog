@@ -132,3 +132,37 @@ sudoku_valido(Tablero) :-
     columnas_validas(Tablero),
     cajas_validas(Tablero).
 
+% insertar_valor(+Tablero, +Fila, +Col, +Valor, -NuevoTablero)
+% Reemplaza la celda (Fila, Col) con Valor. Índices 1-9. Valor 0 = borrar.
+insertar_valor(Tablero, Fila, Col, Valor, NuevoTablero) :-
+    nth1(Fila, Tablero,      FilaVieja, RestoFilas),
+    nth1(Col,  FilaVieja,    _,         RestoCol),
+    nth1(Col,  FilaNueva,    Valor,     RestoCol),
+    nth1(Fila, NuevoTablero, FilaNueva, RestoFilas).
+
+% Predeicados que identifican qué restricción se viola.
+
+% fila_invalida(?N, +Tablero)
+fila_invalida(N, Tablero) :-
+    between(1, 9, N),
+    nth1(N, Tablero, Fila),
+    \+ fila_valida(Fila).
+
+% columna_invalida(?N, +Tablero)
+columna_invalida(N, Tablero) :-
+    between(1, 9, N),
+    columna(N, Tablero, Col),
+    \+ fila_valida(Col).
+
+% cuadrante_invalido(?FilaInicio, ?ColInicio, +Tablero)
+% FilaInicio y ColInicio (0, 3 o 6).
+cuadrante_invalido(FilaInicio, ColInicio, Tablero) :-
+    member(FilaInicio, [0, 3, 6]),
+    member(ColInicio,  [0, 3, 6]),
+    caja(FilaInicio, ColInicio, Tablero, Caja),
+    \+ fila_valida(Caja).
+
+% Verdadero si ninguna celda contiene 0 (tablero totalmente lleno).
+tablero_completo(Tablero) :-
+    \+ (member(Fila, Tablero), member(0, Fila)).
+ 

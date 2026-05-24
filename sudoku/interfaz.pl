@@ -2,6 +2,22 @@
 %    - imprimir_tablero(+Tablero)
 %    - leer_jugada(-Fila, -Col, -Valor)
 
+:- [juego].
+
+% implementación de read_line_to_string/2 con get_char 
+read_line_to_string(Stream, String) :-
+    leer_chars(Stream, Chars),
+    atom_chars(Atom, Chars),
+    atom_string(Atom, String).
+
+leer_chars(Stream, Chars) :-
+    get_char(Stream, C),
+    (   (C == '\n' ; C == end_of_file)
+    ->  Chars = []
+    ;   Chars = [C | Resto],
+        leer_chars(Stream, Resto)
+    ).
+
 % imprimir_tablero(+Tablero)
 imprimir_tablero(Tablero) :-
     nl,
@@ -74,4 +90,25 @@ leer_dato(Prompt, Dato) :-
     ->  Dato = Input
     ;   write('  [!] Ingresa un número del 1 al 9 (o 0 para salir).'), nl,
         leer_dato(Prompt, Dato)
+    ).
+
+% ── Menú de dificultad ────────────────────────────────────────────────────────
+
+menu_dificultad(Nivel) :-
+    nl,
+    write('  ┌──────────────────────────────┐'), nl,
+    write('  │       SUDOKU EN PROLOG       │'), nl,
+    write('  ├──────────────────────────────┤'), nl,
+    write('  │  Selecciona tu tablero       │'), nl,
+    write('  │    1.  Fácil                 │'), nl,
+    write('  │    2.  Intermedio            │'), nl,
+    write('  │    3.  Difícil               │'), nl,
+    write('  └──────────────────────────────┘'), nl,
+    write('  Opción: '),
+    read_line_to_string(user_input, Linea),
+    (   Linea = "1" -> Nivel = facil
+    ;   Linea = "2" -> Nivel = intermedio
+    ;   Linea = "3" -> Nivel = dificil
+    ;   write('  [!] Opción inválida. Elige 1, 2 o 3.'), nl,
+        menu_dificultad(Nivel)
     ).
