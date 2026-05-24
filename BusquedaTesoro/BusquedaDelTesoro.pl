@@ -189,3 +189,52 @@ verificar_tesoro :-
     !.
 
 verificar_tesoro.
+
+
+/*
+ Muestra el estado actual del jugador, incluyendo su ubicación, 
+ temperatura, objetos encontrados y personajes presentes.
+*/
+    estado :-
+        jugador_pos(Pos), % Obtiene la posición actual del jugador
+        nl,
+        % Imprime el mensaje con la ubicación actual del jugador
+        write("ESTADO"), nl,
+        write("Ubicacion actual: "), write(Pos), nl,
+        temperatura_actual, % Muestra la pista de temperatura basada en la distancia al tesoro
+        revisar_objetos, % Muestra los objetos encontrados en la ubicación actual
+        revisar_personajes, % Muestra los personajes presentes en la ubicación actual
+        nl.
+
+/*
+ Lógica para la ubicación de los personajes
+*/
+    % Verifica que el jugador esta en la oficina de Onid e imprime el que Onid está ahi
+    revisar_personajes :-
+        jugador_pos(oficina_onid), 
+        nl,
+        write("Onid está planeando su semana..."), nl,
+        !.
+
+    % Verifica que el jugador esta en el aula t e imprime que Amoni está ahi    
+    revisar_personajes :-
+        jugador_pos(aula_t),
+        nl,
+        write("Amoni busca en su bolso algo..."), nl,
+        !.
+
+    % Verifica que el jugador esta en el laboratorio de simbolicos e imprime que Nanfredo está ahi
+    revisar_personajes :-
+        jugador_pos(laboratorio_simbolicos),
+        nl,
+        write("Nanfredo esta dando su clase ..."), nl,
+        !.
+
+    % Verifica que el jugador esta en el crujipollo e imprime que unos estudiantes están ahi
+    revisar_personajes :-
+        jugador_pos(crujipollo),
+        nl,
+        write("Unos amigables estudiantes estan haciendo fila..."), nl,
+        !.
+
+    revisar_personajes.
