@@ -337,3 +337,64 @@ verificar_tesoro.
         write("Amoni revela que el tesoro NO esta en:"), nl,
         write('- '), write(A), nl,
         write('- '), write(B), nl.
+
+/*
+ Lógica para la habilidad de Nandredo y preguntas para la batalla final
+*/
+    % Habilidad de Nanfredo
+    pregunta_1 :-
+        inteligencia_maxima, % Verifica si el jugador obtuvo inteligencia maxima al hablar con Nanfredo
+        !,
+        nl,
+        write("Pregunta 1: P => P"), nl,
+        read(R), % Lee la respuesta del jugador
+        verificar_respuesta(R, 1). % Compara que la respuesta sea igual a 1
+
+    % Pregunta normal sin la habilidad de Nanfredo
+     pregunta_1 :-
+        nl,
+        write("Pregunta 1: ~(p v q) <=> ~p ^ ~q"), nl,
+
+        read(R),
+        verificar_respuesta(R, 1).
+
+     pregunta_2 :-
+        inteligencia_maxima, % Verifica si el jugador obtuvo inteligencia maxima al hablar con Nanfredo
+        !,
+        nl,
+        write("Pregunta 2: (P => Q) <=> (P V ~Q)"), nl,
+        read(R), % Lee la respuesta del jugador
+        verificar_respuesta(R, 2). % Compara que la respuesta sea igual a 2
+
+        % Pregunta normal sin la habilidad de Nanfredo
+        pregunta_2 :-
+        nl,
+        write("Pregunta 2:"), nl,
+        write("~(P => Q) ^ ~(~P v Q)"), nl,
+        read(R),
+        verificar_respuesta(R, 1).
+
+    pregunta_3 :-
+        inteligencia_maxima, % Verifica si el jugador obtuvo inteligencia maxima al hablar con Nanfredo
+        !,
+        nl,
+        write("Pregunta 3: (P ^ Q) => P"), nl,
+        read(R), % Lee la respuesta del jugador
+        verificar_respuesta(R, 1). % Compara que la respuesta sea igual a 1
+
+    % Pregunta normal sin la habilidad de Nanfredo
+    pregunta_3 :-
+        nl,
+        write("Pregunta 3: "), nl,
+        write("MIDIVLAR: Suficiente de tautolgías!, resuleve este acertijo"), nl,
+        write("Un prisionero está frente a dos puertas"), nl,
+        write("Una lleva a la liberta y otra a la ejecución"), nl,
+        write("Cada puerta esta custodiada por un guardia"), nl,
+        write("Uno de ellos siempre dice la verdad y el otro siempre miente"), nl,
+        write("Pero el prisionero no sabe quien es quien"), nl,
+        write("Para elegir la puerta correcta, el prisionero le dice a un guardia:"), nl,
+        write("Si le preguntará al otro guardia cuál puerta me salva, ¿Cúal me señalaría?."), nl,
+        write("El guardia señala la puerta 1"), nl,
+        write("¿Cuál puerta es la que salva al prisionero?, ¿La 1 o la 2?"), nl,
+        read(R),
+        verificar_respuesta(R, 2).
