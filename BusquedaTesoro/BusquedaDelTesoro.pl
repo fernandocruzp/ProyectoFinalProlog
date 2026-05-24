@@ -190,6 +190,123 @@ verificar_tesoro :-
 
 verificar_tesoro.
 
+/*
+ Cálculo para la distancia entre los lugares
+*/
+    % Usa la fórmula de distancia Manhattan para calcular la distancia entre dos lugares de la cuadricula del mapa
+    distancia(A, B, D) :-
+        lugar(A, X1, Y1),
+        lugar(B, X2, Y2),
+        DX is abs(X1 - X2),
+        DY is abs(Y1 - Y2),
+        D is DX + DY.
+
+/*
+ Lógica para las pistas de temperatura basadas en la distancia 
+ entre el jugador y el tesoro, basandose en diferentes rangos  
+ de distancia
+*/
+    temperatura_actual :-
+        jugador_pos(Pos), % Obtiene la posición actual del jugador
+        tesoro_en(Tesoro), % Obtiene la posición del tesoro
+        distancia(Pos, Tesoro, D), % Calcula la distancia entre el jugador y el tesoro
+        write("Pista: "),
+        pista_temperatura(D), nl.
+
+    % Si la distancia es menor a dos cuadros imprime la pista HIRVIENDO
+    pista_temperatura(D) :-
+        D =< 2,
+        write("HIRVIENDO").
+
+    % Si la distancia es entre 3 y 5 cuadros imprime la pista CALIENTE
+    pista_temperatura(D) :-
+        D >= 3,
+        D =< 5,
+        write("CALIENTE").
+
+    % Si la distancia es entre 6 y 8 cuadros imprime la pista TIBIO
+    pista_temperatura(D) :-
+        D >= 6,
+        D =< 8,
+        write("TIBIO").
+
+    % Si la distancia es entre 9 y 13 cuadros imprime la pista FRIO
+    pista_temperatura(D) :-
+        D >= 9,
+        D =< 13,
+        write("FRIO").
+
+    % Si la distancia es mayor a 13 cuadros imprime la pista HELADO
+    pista_temperatura(D) :-
+        D >= 14,
+        write("HELADO").
+
+/*
+ Lógica para mostrar el inventario del jugador
+ */
+    inventario_j :-
+        nl,
+        write(" INVENTARIO "), nl,
+        (
+            inventario(_) % Verifica si el inventario no esta vacio
+        ->
+            forall(
+                inventario(X), % Itera sobre cada objeto en el inventario
+                (write('- '), write(X), nl) % Imprime cada objeto del inventario
+            )
+        ;
+            write("Inventario vacio."), nl % Mensaje que se muestra si el inventario esta vacio
+        ), nl.
+
+/*
+ Lista de todos los objetos disponibles en el juego
+ */
+    lista_objetos([
+        coca_cola,
+        chocolate_casero,
+        plumon,
+        control_proyector
+    ]).
+
+/*
+ Lógica para colocar los obejtos aleatoriamente en los lugares 
+ del mapa al iniciar el juego.
+*/
+    inicializar_objetos :-
+        lista_objetos(Objetos), % Obtiene la lista de objetos disponibles
+        % Coloca cada objeto en un lugar aleatorio del mapa
+        forall(
+            member(Obj, Objetos), % Itera sobre cada objeto en la lista
+            colocar_objeto(Obj) % Coloca el objeto en un lugar aleatorio del mapa
+        ).
+
+    colocar_objeto(Objeto) :-
+        findall(L, lugar(L, _, _), Lugares), % Obtiene la lista de lugares disponibles
+        random_member(Lugar, Lugares), % Selecciona un lugar aleatorio de la lista
+        assertz(objeto_en(Objeto, Lugar)). % Asocia el objeto con el lugar seleccionado
+
+/*
+ Lógica para revisar si hay objetos en la ubicación actual del jugador
+ y añadirlos al inventario
+*/
+    revisar_objetos :-
+        jugador_pos(Pos), % Obtiene la posición actual del jugador
+        objeto_en(Objeto, Pos), % Verifica si hay un objeto en la ubicación actual del jugador
+        nl,
+        % Imprime el mensaje que indica que se halló un objeto
+        write('Encontraste el objeto: '), write(Objeto), nl,
+        recoger_objeto(Objeto), % Recoge el objeto encontrado y lo añade al inventario
+        fail.
+
+    revisar_objetos.
+
+    recoger_objeto(Objeto) :-
+        retract(objeto_en(Objeto, _)), % Elimina la posición del objeto en el mapa
+        assertz(inventario(Objeto)), % Añade el objeto al inventario del jugador
+        % Imprime el mensaje que indica que el objeto se ha añadido al inventario
+        write("Se agrego al inventario."), nl,
+        evento_especial(Objeto). % Verifica si el objeto tiene un evento especial asociado y lo ejecuta
+
 
 /*
  Muestra el estado actual del jugador, incluyendo su ubicación, 
