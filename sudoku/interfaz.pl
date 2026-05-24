@@ -92,14 +92,22 @@ leer_dato(Prompt, Dato) :-
         leer_dato(Prompt, Dato)
     ).
 
+% ── Punto de entrada ──────────────────────────────────────────────────────────
+
+iniciar :-
+    menu_dificultad(Nivel),
+    tablero(Nivel, Tablero),
+    bucle_juego(Tablero, Tablero).
+
+
 % ── Menú de dificultad ────────────────────────────────────────────────────────
 
 menu_dificultad(Nivel) :-
     nl,
     write('  ┌──────────────────────────────┐'), nl,
-    write('  │       SUDOKU EN PROLOG       │'), nl,
+    write('  │            SUDOKU            │'), nl,
     write('  ├──────────────────────────────┤'), nl,
-    write('  │  Selecciona tu tablero       │'), nl,
+    write('  │  Selecciona el nivel         │'), nl,
     write('  │    1.  Fácil                 │'), nl,
     write('  │    2.  Intermedio            │'), nl,
     write('  │    3.  Difícil               │'), nl,
@@ -112,3 +120,80 @@ menu_dificultad(Nivel) :-
     ;   write('  [!] Opción inválida. Elige 1, 2 o 3.'), nl,
         menu_dificultad(Nivel)
     ).
+
+% ── Bucle principal para la interfaz de usuario ────────────────────────────────────
+
+% bucle_juego(+Original, +Tablero)
+bucle_juego(Original, Tablero) :-
+    imprimir_tablero(Tablero), nl,
+    write('  Jugada  :  <fila> <columna> <valor>   (ejemplo: > 3 5 7)'), nl,
+    write('  Salir   :  q'), nl,
+    write('  > '),
+    read_line_to_string(user_input, Linea),
+    (   (Linea = "q")
+    ->  nl, write('  ¡Hasta luego!'), nl
+    ;   (   parsear_jugada(Linea, Fila, Col, Valor)
+        ->  (   celda_editable(Original, Fila, Col)
+            ->  insertar_valor(Tablero, Fila, Col, Valor, NuevoTablero),
+                (   sudoku_valido(NuevoTablero)
+                ->  (   tablero_completo(NuevoTablero)
+                    ->  imprimir_tablero(NuevoTablero),
+                        imprimir_victoria
+                    ;   bucle_juego(Original, NuevoTablero)
+                    )
+                ;   reportar_invalido(NuevoTablero),
+                    bucle_juego(Original, Tablero)
+                )
+            ;   write('  Celda bloqueada: no se pueden modificar los valores iniciales de tablero.'), nl,
+                bucle_juego(Original, Tablero)
+            )
+        ;   write('  Formato inválido. Usa: <fila> <columna> <valor>'), nl,
+            bucle_juego(Original, Tablero)
+        )
+    ).
+
+% celda_editable(+Original, +Fila, +Col)
+% Verdadero si la celda (Fila, Col) en el tablero original es 0.
+% Original: tablero inicial sin modificar, usado para bloquear las celdas que no se pueden cambiar.
+celda_editable(Original, Fila, Col) :-
+    nth1(Fila, Original, FilaOrig),
+    nth1(Col, FilaOrig, 0).
+
+% reportar_invalido(+Tablero)
+% Muestra qué filas, columnas y cuadrantes tienen duplicados.
+reportar_invalido(Tablero) :-
+    nl,
+    write('  [!] Movimiento inválido'), nl,
+    findall(N,     fila_invalida(N, Tablero),          Filas),
+    findall(N,     columna_invalida(N, Tablero),       Cols),
+    findall(FI-CI, cuadrante_invalido(FI, CI, Tablero), Cuads),
+    (Filas \= [] -> format('      · Fila(s) con duplicados:      ~w~n', [Filas]) ; true),
+    (Cols  \= [] -> format('      · Columna(s) con duplicados:   ~w~n', [Cols])  ; true),
+    (Cuads \= [] -> maplist(describir_cuadrante, Cuads) ; true), nl.
+
+% describir_cuadrante(+FI-CI)
+% Convierte índices base 0 del bloque a rangos base 1 legibles.
+describir_cuadrante(FI-CI) :-
+    F1 is FI + 1, F2 is FI + 3,
+    C1 is CI + 1, C2 is CI + 3,
+    format('      · Cuadrante filas ~w-~w, cols ~w-~w con duplicados~n', [F1, F2, C1, C2]).
+
+% Despliega "SUDOKU!" en letras de bloque ASCII de 5 filas.
+imprimir_victoria :-
+    nl,
+    write('   ████ █   █ ████   ███  █   █ █   █  █'), nl,
+    write('  █     █   █ █   █ █   █ █  █  █   █  █'), nl,
+    write('   ███  █   █ █   █ █   █ ███   █   █  █'), nl,
+    write('      █ █   █ █   █ █   █ █  █  █   █   '), nl,
+    write('  ████   ███  ████   ███  █   █  ███   █'), nl,
+    nl,
+    write('  ¡Felicidades! Completaste el Sudoku.'), nl, nl.
+
+% parsear_jugada(+Linea, -Fila, -Col, -Valor)
+% Descompone "F C V" en tres enteros; El valor 0 borra una celda.
+parsear_jugada(Linea, Fila, Col, Valor) :-
+    split_string(Linea, " ", " ", Partes),
+    exclude(=(""), Partes, [SF, SC, SV | _]),
+    number_string(Fila,  SF), integer(Fila),  between(1, 9, Fila),
+    number_string(Col,   SC), integer(Col),   between(1, 9, Col),
+    number_string(Valor, SV), integer(Valor), between(0, 9, Valor).
