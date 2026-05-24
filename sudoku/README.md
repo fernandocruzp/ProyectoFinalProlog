@@ -16,14 +16,31 @@ Este proyecto es una implementación interactiva del juego Sudoku desarrollada e
  
 ## 3. Instrucciones de uso
 
-Desde la terminal, ubicarse en la carpeta del proyecto y ejecutar: swipl -g "iniciar, halt" interfaz.pl
+Desde la terminal, ubicarse en la carpeta del proyecto y ejecutar:
 
-Seleccionar el nivel de dificultad(Fácil, Intermedio o Difícil) y el tablero aparecerá en consola.
+```bash
+swipl -g "iniciar, halt" interfaz.pl
+```
 
-Para realizar una jugada, ingresar: <fila> <columna> <valor>   (Ejemplo: > 3 5 7)
+Seleccionar el nivel de dificultad (Fácil, Intermedio o Difícil) y el tablero aparecerá en consola.
 
-Para borrar una celda, ingresar 0 como valor (Ejemplo: > 3 5 0)
+Para realizar una jugada, ingresar:
 
+```text
+<fila> <columna> <valor>
+```
+
+Ejemplo:
+
+```text
+> 3 5 7
+```
+
+Para borrar una celda, ingresar `0` como valor:
+
+```text
+> 3 5 0
+```
 
 ## 4. Reglas del juego
 
@@ -72,7 +89,7 @@ En ese momento se muestra un mensaje de victoria.
 
 ## 6. Ejemplo de sesión de juego
 
-
+```text
   ┌──────────────────────────────┐
   │            SUDOKU            │
   ├──────────────────────────────┤
@@ -85,17 +102,17 @@ En ese momento se muestra un mensaje de victoria.
 
       1   2   3   4   5   6   7   8   9
     +───────────+───────────+───────────+
-  1 |  3  .  . | .  .  2 | .  9  . 
-  2 |  .  .  . | .  .  . | .  .  4 
-  3 |  .  .  5 | .  .  . | .  3  . 
+  1 |  3  .  . | .  .  2 | .  9  .
+  2 |  .  .  . | .  .  . | .  .  4
+  3 |  .  .  5 | .  .  . | .  3  .
     +───────────+───────────+───────────+
-  4 |  6  .  . | 1  .  . | 3  .  . 
-  5 |  .  .  . | .  6  . | .  .  8 
-  6 |  .  8  . | 2  .  3 | 5  7  . 
+  4 |  6  .  . | 1  .  . | 3  .  .
+  5 |  .  .  . | .  6  . | .  .  8
+  6 |  .  8  . | 2  .  3 | 5  7  .
     +───────────+───────────+───────────+
-  7 |  .  .  6 | 5  .  4 | .  .  . 
-  8 |  1  .  . | .  .  . | .  .  2 
-  9 |  9  .  . | .  1  . | .  .  7 
+  7 |  .  .  6 | 5  .  4 | .  .  .
+  8 |  1  .  . | .  .  . | .  .  2
+  9 |  9  .  . | .  1  . | .  .  7
     +───────────+───────────+───────────+
 
   Jugada  :  <fila> <columna> <valor>   (ejem: > 3 5 7)
@@ -104,37 +121,60 @@ En ese momento se muestra un mensaje de victoria.
 
       1   2   3   4   5   6   7   8   9
     +───────────+───────────+───────────+
-  1 |  3  1  . | .  .  2 | .  9  . 
-  2 |  .  .  . | .  .  . | .  .  4 
-  3 |  .  .  5 | .  .  . | .  3  . 
+  1 |  3  1  . | .  .  2 | .  9  .
+  2 |  .  .  . | .  .  . | .  .  4
+  3 |  .  .  5 | .  .  . | .  3  .
     +───────────+───────────+───────────+
-  4 |  6  .  . | 1  .  . | 3  .  . 
-  5 |  .  .  . | .  6  . | .  .  8 
-  6 |  .  8  . | 2  .  3 | 5  7  . 
+  4 |  6  .  . | 1  .  . | 3  .  .
+  5 |  .  .  . | .  6  . | .  .  8
+  6 |  .  8  . | 2  .  3 | 5  7  .
     +───────────+───────────+───────────+
-  7 |  .  .  6 | 5  .  4 | .  .  . 
-  8 |  1  .  . | .  .  . | .  .  2 
-  9 |  9  .  . | .  1  . | .  .  7 
+  7 |  .  .  6 | 5  .  4 | .  .  .
+  8 |  1  .  . | .  .  . | .  .  2
+  9 |  9  .  . | .  1  . | .  .  7
     +───────────+───────────+───────────+
 
   Jugada  :  <fila> <columna> <valor>   (ejem: > 3 5 7)
   Salir   :  q
   > 1 1 3
-  Celda bloqueada: no se pueden modificar los valores iniciales de tablero.
+
+  Celda bloqueada: no se pueden modificar los valores iniciales del tablero.
 
       1   2   3   4   5   6   7   8   9
     +───────────+───────────+───────────+
-  1 |  3  1  . | .  .  2 | .  9  . 
-  2 |  .  .  . | .  .  . | .  .  4 
-  3 |  .  .  5 | .  .  . | .  3  . 
+  1 |  3  1  . | .  .  2 | .  9  .
+  2 |  .  .  . | .  .  . | .  .  4
+  3 |  .  .  5 | .  .  . | .  3  .
     +───────────+───────────+───────────+
-  4 |  6  .  . | 1  .  . | 3  .  . 
-  5 |  .  .  . | .  6  . | .  .  8 
-  6 |  .  8  . | 2  .  3 | 5  7  . 
+  4 |  6  .  . | 1  .  . | 3  .  .
+  5 |  .  .  . | .  6  . | .  .  8
+  6 |  .  8  . | 2  .  3 | 5  7  .
     +───────────+───────────+───────────+
-  7 |  .  .  6 | 5  .  4 | .  .  . 
-  8 |  1  .  . | .  .  . | .  .  2 
-  9 |  9  .  . | .  1  . | .  .  7 
+  7 |  .  .  6 | 5  .  4 | .  .  .
+  8 |  1  .  . | .  .  . | .  .  2
+  9 |  9  .  . | .  1  . | .  .  7
+    +───────────+───────────+───────────+
+
+  Jugada  :  <fila> <columna> <valor>   (ejem: > 3 5 7)
+  Salir   :  q
+  > 1 3 3
+
+  [!] Movimiento inválido
+      · Fila(s) con duplicados: [1]
+
+      1   2   3   4   5   6   7   8   9
+    +───────────+───────────+───────────+
+  1 |  3  1  . | .  .  2 | .  9  .
+  2 |  .  .  . | .  .  . | .  .  4
+  3 |  .  .  5 | .  .  . | .  3  .
+    +───────────+───────────+───────────+
+  4 |  6  .  . | 1  .  . | 3  .  .
+  5 |  .  .  . | .  6  . | .  .  8
+  6 |  .  8  . | 2  .  3 | 5  7  .
+    +───────────+───────────+───────────+
+  7 |  .  .  6 | 5  .  4 | .  .  .
+  8 |  1  .  . | .  .  . | .  .  2
+  9 |  9  .  . | .  1  . | .  .  7
     +───────────+───────────+───────────+
 
   Jugada  :  <fila> <columna> <valor>   (ejem: > 3 5 7)
@@ -142,3 +182,4 @@ En ese momento se muestra un mensaje de victoria.
   > q
 
   ¡Hasta luego!
+```
