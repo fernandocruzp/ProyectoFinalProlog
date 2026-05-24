@@ -1,6 +1,11 @@
 % 1. Se define el Tablero: K6
 
-vertice(a). vertice(b). vertice(c). vertice(d). vertice(e). vertice(f).
+vertice(a).
+vertice(b). 
+vertice(c). 
+vertice(d). 
+vertice(e). 
+vertice(f).
 
 arista(X, Y) :- vertice(X), vertice(Y), X \= Y.
 
@@ -15,10 +20,15 @@ estado_valido(estado(Turno, AristasJ1, AristasJ2)) :-
     turno_valido(Turno),
     is_list(AristasJ1),
     is_list(AristasJ2).
+    
+% Se define una funcion que muestra las aristas de un jugador en base al estado del juego.
+aristas_j(j1, estado(_, AristasJ1, _), AristasJ1).
+aristas_j(j2, estado(_, _, AristasJ2), AristasJ2).
 
 % 3. Se definen los movimientos validos.
 
 % Revisamos que una arisra no este en las listas de los jugadores, se revisa las opciones (X,Y) y (Y,X).
+
 arista_ocupada(X, Y, estado(_, AristasJ1, AristasJ2)) :-    
     ( member(edge(X, Y), AristasJ1)
     ; member(edge(Y, X), AristasJ1)
@@ -45,3 +55,10 @@ ejecutar_movimiento(estado(j1, AristasJ1, AristasJ2), X, Y, estado(j2, [edge(X, 
 
 ejecutar_movimiento(estado(j2, AristasJ1, AristasJ2), X, Y, estado(j1, AristasJ1, [edge(X, Y)|AristasJ2])) :-
     movimientoValido(estado(j2, AristasJ1, AristasJ2), X, Y).
+    
+% 5. Funcion que muestra movimientos positbles.
+libres(Estado, X, Y) :-
+    estado_valido(Estado),
+    arista(X, Y),
+    X @< Y,                             
+    \+ arista_ocupada(X, Y, Estado).
