@@ -238,3 +238,80 @@ verificar_tesoro.
         !.
 
     revisar_personajes.
+
+/*
+  Lógica para interactuar con los personajes
+*/
+    % Si el jugador tiene una Coca-Cola en su inventario, puede darsela a Onid para que revele la ubicacion del tesoro
+    hablar(onid) :-
+        jugador_pos(oficina_onid),
+        (
+            inventario(coca_cola)
+        ->
+            retract(inventario(coca_cola)), % Elimina la Coca-Cola del inventario del jugador
+            nl,
+            write('Le das una Coca-Cola a Onid...'), nl,
+            random(1, 101, R),
+            (
+                R =< 35 % Onid tiene un 35% de probabilidad de descifrar el mapa completamente
+            ->
+                tesoro_en(L),
+                write("Onid desifró el resto del mapa!"), nl,
+                write("El cofre esta en: "), write(L), nl
+            ;
+                write("Onid reflexiona profundamente..."), nl,
+                write("Pero no logró descrifrar el resto del mapa."), nl
+            )
+            ;
+                write("Onid quiere una Coca-Cola, para refrescarse y descifrar el mapa."), nl
+
+        ).
+
+    hablar(amoni) :-
+        % Si el jugador tiene un plumon en su inventario, Amoni puede usarlo para descartar dos ubicaciones donde no esta el tesoro
+        jugador_pos(aula_t),
+        (
+            inventario(plumon)
+        ->
+            retract(inventario(plumon)), % Elimina el plumon del inventario del jugador
+            nl,
+            write("Amoni usa el plumon y dibuja un mapa."), nl,
+            descartar_ubicaciones
+        ;
+            write("Necesita un plumon, para mostrarte donde ya han buscado otros el tesoro"), nl
+        ).
+
+    hablar(nanfredo) :-
+        % Si el jugador tiene el control del proyector en su inventario, Nanfredo puede usarlo para facilitar los acertijos de la batalla final
+        jugador_pos(laboratorio_simbolicos),
+        (
+            inventario(control_proyector)
+        ->
+            retract(inventario(control_proyector)), % Elimina el control del proyector del inventario del jugador
+            nl,
+            write("Nanfredo logra encender el proyector y mejorar la calidad de la clase."), nl,
+            write("Tu IQ aumentó de golpe!."), nl,
+            assertz(inteligencia_maxima)
+        ;
+            write("Necesita el control del proyector para que se te faciliten los acertijos..."), nl
+        ).
+
+    hablar(estudiantes) :-
+        % Si el jugador tiene una Coca-Cola en su inventario, puede darsela a los estudiantes para obtener el pato de hule
+        jugador_pos(crujipollo),
+        (
+            inventario(coca_cola)
+        ->
+            retract(inventario(coca_cola)), % Elimina la Coca-Cola del inventario del jugador
+            nl,
+            write("Los estudiantes aceptan tu Coca-Cola."), nl,
+            write("Te entregan un pato de hule."), nl,
+            assertz(inventario(pato_hule))
+        ;
+            write("te proponen un intercambio... "), nl,
+            write("un refresco por un objeto misterioso"), nl
+        ).
+
+    hablar(_) :-
+        nl,
+        write("No puedes hablar con nadie aqui."), nl.
