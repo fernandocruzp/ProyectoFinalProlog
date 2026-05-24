@@ -1,3 +1,53 @@
+:- use_module(library(readutil)).
+
+% Inicializa el juego mostrando un mensaje de bienvenida con las reglas básicas del Nim e inicia
+% la partida con un tablero predefinido [3,5,7] y los jugadores jugador1 y jugador2
+inicio :-
+    write('========================================'), nl,
+    write('        BIENVENIDO AL JUEGO NIM         '), nl,
+    write('========================================'), nl, nl,
+    write('REGLAS DEL JUEGO:'), nl,
+    write('- Hay tres filas con palillos:'), nl,
+    write('  Fila 1: 3 palillos'), nl,
+    write('  Fila 2: 5 palillos'), nl,
+    write('  Fila 3: 7 palillos'), nl,
+    write('- En cada turno, el jugador debe elegir una fila (1,2,3)'), nl,
+    write('  y retirar al menos 1 palillo y como máximo todos los de esa fila.'), nl,
+    write('- Gana el jugador que toma el último palillo.'), nl, nl,
+    write('Los jugadores son: jugador1 y jugador2.'), nl,
+    write('Para mover, escribe: "fila cantidad" (ejemplo: 2 3)'), nl,
+    write('========================================'), nl, nl,
+
+    % Tablero inicial: [3,5,7]
+    juego([3,5,7], jugador1, jugador2).
+
+% mostrar_tablero
+% Imprime el estado actual del tablero
+mostrar_tablero(Tablero) :-
+    nl,
+    write('Estado actual del tablero:'), nl,
+    mostrar_fila(1, Tablero),
+    mostrar_fila(2, Tablero),
+    mostrar_fila(3, Tablero),
+    nl.
+
+% Muestra una única fila del tablero.
+mostrar_fila(N, Tablero) :-
+    nth1(N, Tablero, Cantidad),
+    format('Fila ~d: ', [N]),
+    escribir_palillos(Cantidad),
+    nl.
+
+% Dibuja una representación visual de los palillos.
+escribir_palillos(0) :- write('(vacía)').
+escribir_palillos(Cant) :-
+    Cant > 0,
+    forall(between(1, Cant, _), write('| ')).
+
+% tablero_vacio
+% Verdadero si todas las filas tienen 0 palillos
+tablero_vacio([]).
+tablero_vacio([0|Resto]) :- tablero_vacio(Resto).
 
 % -----------------------------
 % Bucle principal del juego.
