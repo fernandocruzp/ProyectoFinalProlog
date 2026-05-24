@@ -9,42 +9,39 @@
 % La idea del juego es representar el tablero como una lista de casillas
 % cada casilla guarda su posicion y si esta cerrada, abierta o tiene mina
 % casilla(X, Y, Estado)  donde Estado = cerrada | abierta | mina
+% cuando una casilla abierta tiene mina se muestra como _m_ en el tablero
 
 % Tablero 8x8, las minas estan fijas
 %    ___ ___ ___ ___ ___ ___ ___ ___
 % 8 |___|___|_m_|___|___|___|_m_|___|
-% 7 |___|___|_m_|___|___|___|_m_|___|
-% 6 |___|_m_|___|___|___|_m_|___|___|
-% 5 |___|___|_m_|___|___|_m_|___|___|
-% 4 |___|_m_|___|_m_|_m_|___|_m_|___|
-% 3 |_m_|___|___|___|_m_|___|___|_m_|
-% 2 |___|___|_m_|___|_m_|___|___|___|
-% 1 |___|_m_|___|_m_|___|___|___|___|
+% 7 |___|___|___|___|___|___|___|___|
+% 6 |_m_|___|___|___|___|_m_|___|___|
+% 5 |___|___|___|_m_|___|___|___|___|
+% 4 |___|___|___|___|___|___|_m_|___|
+% 3 |___|_m_|___|___|_m_|___|___|___|
+% 2 |___|___|___|___|___|___|___|___|
+% 1 |___|___|___|_m_|___|___|___|___|
 %     1   2   3   4   5   6   7   8
 
-% Definimos las casillas donde hay una mina con la función mina(X, Y)
-mina(2, 1).
+% ---------------------------------------------------------------------------------
+% Minas fijas del tablero
+% ---------------------------------------------------------------------------------
+
 mina(4, 1).
-mina(3, 2).
-mina(5, 2).
-mina(1, 3).
+mina(2, 3).
 mina(5, 3).
-mina(8, 3).
-mina(2, 4).
-mina(4, 4).
-mina(5, 4).
 mina(7, 4).
-mina(3, 5).
-mina(6, 5).
-mina(2, 6).
+mina(4, 5).
+mina(1, 6).
 mina(6, 6).
-mina(3, 7).
-mina(7, 7).
 mina(3, 8).
 mina(7, 8).
 
-% en_tablero(X, Y) - nos dice si la casilla existe dentro del tablero
+% ----------------------------------------------------------
+% en_tablero(X, Y) 
+% verifica si la casilla esta dentro del tablero 8x8
 % los indices van de 1 a 8 en ambos ejes
+% ----------------------------------------------------------
 
 en_tablero(X, Y) :-
     X >= 1, X =< 8,
@@ -62,7 +59,7 @@ tablero_inicial(Tablero) :-
 % caso base: ya pasamos la fila 8, terminamos
 generar_casillas(_, 9, []) :- !.
 
-% cuando X llega a 9 pasamos a la siguiente fila
+% cambio de fila: cuando X llega a 9 pasamos a la siguiente fila
 generar_casillas(9, Y, Lista) :-
     !,
     Y1 is Y + 1,
@@ -94,7 +91,7 @@ reemplazar_casilla([casilla(X, Y, _) | Resto], X, Y, Nuevo,
                   [casilla(X, Y, Nuevo) | Resto]) :- !.
 reemplazar_casilla([C | Resto], X, Y, Nuevo, [C | RestoNuevo]) :-
     reemplazar_casilla(Resto, X, Y, Nuevo, RestoNuevo).
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 % ----------------------------------------------------------
 % minas_adyacentes(X, Y, N)
 % cuenta cuantas minas hay alrededor de la casilla (X, Y)
@@ -178,70 +175,160 @@ es_vacia(X, Y) :-
 
 % Imprime el tablero...
 
-% Inicia la ejecución del juego.
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+% ----------------------------------------------------------
+% inicio del juego
+% ----------------------------------------------------------
+
 inicio :-
-    write('\t--- Bucaminas ---\n'),
+    write('--- Buscaminas ---\n'),
     tablero_inicial(Tablero),
     consulta(Tablero),
     bucle_juego(Tablero).
 
-% Mantiene el juego en un bucle
-% Solicita las coordenadas de la casilla que el usuario quiera abrir (X, Y).
+% ----------------------------------------------------------
+% bucle principal
+% ----------------------------------------------------------
+
 bucle_juego(Tablero) :-
-    write('Selección de casilla.\n'),
-    write('Coordenada x: '), read(X),
-    write('Coordenada y: '), read(Y),
+    write('Seleccion de casilla.\n'),
+
+    write('Coordenada x: '),
+    read(X),
+
+    write('Coordenada y: '),
+    read(Y),
+
     !,
     procesar_jugada(Tablero, X, Y).
 
-% Procesa la selección del usuario.
-% Despues de procesar la jugada regresamos a bucle_juego para no perder el proceso del juego.
-% Si la casilla es una mina, termina el juego.
+% ----------------------------------------------------------
+% procesar_jugada
+% ----------------------------------------------------------
+
+% fuera del tablero
 procesar_jugada(Tablero, X, Y) :-
     \+ en_tablero(X, Y), !,
+
     write('Jugada invalida. Coordenadas fuera del tablero.\n'),
     consulta(Tablero),
     bucle_juego(Tablero).
+
+% casilla ya abierta
 procesar_jugada(Tablero, X, Y) :-
     buscar_casilla(Tablero, X, Y, abierta), !,
+
     write('Esta casilla ya esta abierta.\n'),
     bucle_juego(Tablero).
+
+% mina -> perder
 procesar_jugada(Tablero, X, Y) :-
     mina(X, Y), !,
-    reemplazar_casilla(Tablero, X, Y, abierta, TableroFinal),
+
+    reemplazar_casilla(
+        Tablero,
+        X, Y,
+        abierta,
+        TableroFinal),
+
     consulta(TableroFinal),
-    write('\n ¡ Boom ! Pisaste una mina.\n'),
-    write('\t - Fin del juego -\n'),
-    write('Escribe "inicio." para volver a jugar\n').
+
+    write('Boom! Pisaste una mina.\n'),
+    write('- Fin del juego -\n'),
+    write('Escribe inicio. para volver a jugar\n').
+
+% casilla segura
 procesar_jugada(Tablero, X, Y) :-
-    reemplazar_casilla(Tablero, X, Y, abierta, TableroAux),
-    expandir_abrir(TableroAux, X, Y, NuevoTablero),
+
+    reemplazar_casilla(
+        Tablero,
+        X, Y,
+        abierta,
+        TableroAux),
+
+    expandir_abrir(
+        TableroAux,
+        X, Y,
+        NuevoTablero),
+
     write('Jugada valida\n'),
     consulta(NuevoTablero),
-    bucle_juego(NuevoTablero).
 
-% Abre las casillas alrededor de la casilla seleccionada
+    (
+        gana(NuevoTablero)
+    ->
+        write('Felicidades, ganaste!\n')
+    ;
+        bucle_juego(NuevoTablero)
+    ).
+
+% ----------------------------------------------------------
+% expandir_abrir
+% si la casilla es vacia propaga a sus vecinos,
+% si no, no hay nada que expandir
+% ----------------------------------------------------------
+
 expandir_abrir(Tablero, X, Y, NuevoTablero) :-
     es_vacia(X, Y), !,
-    Direcciones = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)],
-    procesar_vecinos_expandir(Tablero, X, Y, Direcciones, NuevoTablero).
-expandir_abrir(Tablero, X, Y, NuevoTablero) :-
-    \+ mina(X, Y), !,
-    reemplazar_casilla(Tablero, X, Y, abierta, NuevoTablero).
+    expandir_vecinos(Tablero, X, Y, NuevoTablero).
+
 expandir_abrir(Tablero, _, _, Tablero).
 
-procesar_vecinos_expandir(Tablero, _, _, [], Tablero) :- !.
-procesar_vecinos_expandir(Tablero, X, Y, [(Dx, Dy) | RestoDirecciones], NuevoTablero) :-
-    Vx is X + Dx,
-    Vy is Y + Dy,
-    (en_tablero(Vx, Vy), buscar_casilla(Tablero, Vx, Vy, cerrada), \+ mina(Vx, Vy) ->
-        reemplazar_casilla(Tablero, Vx, Vy, abierta, TableroConVecinoAbierto),
-        (es_vacia(Vx, Vy) ->
-            expandir_abrir(TableroConVecinoAbierto, Vx, Vy, TableroExpandido)
+% ----------------------------------------------------------
+% expandir_vecinos
+% ----------------------------------------------------------
+
+expandir_vecinos(Tablero, X, Y, NuevoTablero) :-
+    expandir_vecinos_aux(
+        Tablero,
+        X, Y,
+        [(-1,-1), (-1,0), (-1,1),
+         (0,-1),          (0,1),
+         (1,-1),  (1,0),  (1,1)],
+        NuevoTablero).
+
+expandir_vecinos_aux(
+    Tablero,
+    _, _, [],
+    Tablero).
+
+expandir_vecinos_aux(
+    Tablero,
+    X, Y,
+    [(DX,DY) | Resto],
+    NuevoTablero) :-
+
+    VX is X + DX,
+    VY is Y + DY,
+
+    (
+        en_tablero(VX, VY),
+        buscar_casilla(Tablero, VX, VY, cerrada),
+        \+ mina(VX, VY)
+    ->
+        reemplazar_casilla(
+            Tablero,
+            VX, VY,
+            abierta,
+            TableroAux),
+
+        (
+            es_vacia(VX, VY)
+        ->
+            expandir_abrir(
+                TableroAux,
+                VX, VY,
+                TableroExpandido)
         ;
-            TableroExpandido = TableroConVecinoAbierto
-        ),
-        procesar_vecinos_expandir(TableroExpandido, X, Y, RestoDirecciones, NuevoTablero)
+            TableroExpandido = TableroAux
+        )
     ;
-        procesar_vecinos_expandir(Tablero, X, Y, RestoDirecciones, NuevoTablero)
-    ).
+        TableroExpandido = Tablero
+    ),
+
+    expandir_vecinos_aux(
+        TableroExpandido,
+        X, Y,
+        Resto,
+        NuevoTablero).
