@@ -62,7 +62,7 @@ juego(Tablero, Actual, Otro) :-
         (   validar_mov(Tablero, Fila, Tomar, NuevoTablero)
         ->  juego(NuevoTablero, Otro, Actual)
         ;   writeln('Movimiento invalido. Intenta de nuevo.'),
-            juego(Tablero, Actual, Other)
+            juego(Tablero, Actual, Otro)
         )
     ).
 
