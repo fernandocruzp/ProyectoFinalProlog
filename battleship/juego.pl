@@ -86,6 +86,33 @@ recibir_disparo(Tablero, Fila, Columna, Tablero) :-
     (Celda == x ; Celda == m),
     writeln('--- Ya disparaste a esa coordenada. Pierdes el turno. ---').
 
+
+% ATAQUE DE LA COMPUTADORA
+% Genera coordenadas aleatorias hasta encontrar una casilla válida
+ataque_computadora(TableroJugador, NuevoTableroJugador) :-
+    random(0, 5, Fila),
+    random(0, 5, Columna),
+    obtener_celda(TableroJugador, Fila, Columna, Celda),
+    % Validamos que no haya disparado antes a esa casilla (no debe ser 'x' ni 'm')
+    Celda \== x, Celda \== m, !,
+    format('\nLa computadora dispara a la posición [Fila: ~w, Columna: ~w]~n', [Fila, Columna]),
+    recibir_disparo_computadora(TableroJugador, Fila, Columna, NuevoTableroJugador).
+
+% Si ya había disparado ahí, el backtracking busca otra coordenada
+ataque_computadora(TableroJugador, NuevoTableroJugador) :-
+    ataque_computadora(TableroJugador, NuevoTableroJugador).
+
+% Modificación de recibir_disparo exclusiva para el anuncio de la computadora
+recibir_disparo_computadora(Tablero, Fila, Columna, NuevoTablero) :-
+    obtener_celda(Tablero, Fila, Columna, s), !,
+    actualizar_matriz(Tablero, Fila, Columna, x, NuevoTablero),
+    writeln('--- ¡Te han TOCADO un barco! ---').
+recibir_disparo_computadora(Tablero, Fila, Columna, NuevoTablero) :-
+    obtener_celda(Tablero, Fila, Columna, w), !,
+    actualizar_matriz(Tablero, Fila, Columna, m, NuevoTablero),
+    writeln('--- La computadora cayó en AGUA... ---').
+
+    
 % CONDICIÓN DE VICTORIA
 % El juego termina cuando ya no quedan celdas con barcos intactos ('s')
 quedan_barcos(Tablero) :-
@@ -173,28 +200,53 @@ jugar :-
     ciclo_juego.
 
 ciclo_juego :-
-    tablero_computadora(T),
-    tablero_jugador(TJ), % <--- Recuperamos tu tablero de la memoria
+    tablero_computadora(TC),
+    tablero_jugador(TJ),
     
     writeln('\n===================================='),
     writeln('TU TABLERO ACTUAL (Tus barcos):'),
-    mostrar_tablero(TJ), % <--- Aquí sí mostramos las 's' de tus barcos
+    mostrar_tablero(TJ), 
     writeln('===================================='),
     
     writeln('\nEstado actual del radar enemigo:'),
-    mostrar_tablero_oculto(T),
+    mostrar_tablero_oculto(TC),
     
-    % Validación estricta de coordenadas por teclado
+% --- TURNO DEL JUGADOR ---
+    writeln('\n--- TU TURNO ---'),
     writeln('Ingresa la Fila (0-4):'), 
-    read_line_to_string(user_input, S_Fila), number_string(Fila, S_Fila),
+    read_line_to_codes(user_input, CodesFila), number_codes(Fila, CodesFila),
     writeln('Ingresa la Columna (0-4):'), 
-    read_line_to_string(user_input, S_Col), number_string(Columna, S_Col),
+    read_line_to_codes(user_input, CodesCol), number_codes(Columna, CodesCol),
     
     (Fila >= 0, Fila =< 4, Columna >= 0, Columna =< 4 ->
-        retract(tablero_computadora(T)),
-        recibir_disparo(T, Fila, Columna, NT),
-        asserta(tablero_computadora(NT)),
-        (verificar_victoria(NT) -> ciclo_juego ; !)
+        retract(tablero_computadora(TC)),
+        recibir_disparo(TC, Fila, Columna, NTC),
+        asserta(tablero_computadora(NTC)),
+        
+        % Verificamos si el jugador ganó con ese tiro
+        (not(quedan_barcos(NTC)) -> 
+            writeln('\n===================================='),
+            writeln('¡TODOS LOS BARCOS ENEMIGOS HUNDIDOS!'),
+            writeln('¡HAS GANADO EL JUEGO!'),
+            writeln('====================================')
+        ;
+            % --- TURNO DE LA COMPUTADORA ---
+            writeln('\n--- TURNO DE LA COMPUTADORA ---'),
+            retract(tablero_jugador(TJ)),
+            ataque_computadora(TJ, NTJ),
+            asserta(tablero_jugador(NTJ)),
+            
+            % Verificamos si la computadora ganó con ese tiro
+            (not(quedan_barcos(NTJ)) ->
+                writeln('\n===================================='),
+                writeln('¡TODOS TUS BARCOS HAN SIDO HUNDIDOS!'),
+                writeln('LA COMPUTADORA GANA. Más suerte la próxima.'),
+                writeln('====================================')
+            ;
+                % Si nadie ha ganado, el ciclo continúa de forma recursiva
+                ciclo_juego
+            )
+        )
     ;
         writeln('Coordenadas inválidas. Intenta de nuevo.'),
         ciclo_juego
