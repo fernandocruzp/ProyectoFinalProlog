@@ -336,6 +336,7 @@ accion(estado(pasillo, Inv, Stats, T), salirCalle,
 
 accion(estado(pasillo, Inv, stats(S, E, C), T), hablarConRodrigo,
        estado(pasillo, [rodrigoHablo | Inv], stats(S, E1, C), T1)) :-
+    % Hablar con rodrigo te da una pista falsa sobre Vlad
     \+ miembro(rodrigoHablo, Inv),
     E1 is min(3, E + 1),
     T1 is T + 1,
@@ -351,6 +352,32 @@ accion(estado(pasillo, Inv, stats(S, E, C), T), examinarPuertas,
 
 % --- CALLE ---
 
+accion(estado(calle, Inv, Stats, T), entrarATienda,
+       estado(tienda, Inv, Stats, T1)) :-
+    T1 is T + 1,
+    write('Decides ir a la tienda.'), nl.
+
+accion(estado(calle, Inv, Stats, T), irAFacultad,
+       estado(entradaFacultad, Inv, Stats, T1)) :-
+    T1 is T + 1,
+    write('Ignoras la tienda y caminas viendo el amanecer. Llegas a las puertas de la Facultad.'), nl.
+
+% --- TIENDA ---
+
+accion(estado(tienda, Inv, Stats, T), salirTienda,
+       estado(calle, Inv, Stats, T1)) :-
+    T1 is T + 1,
+    write('Sales de la tienda y vuelves a la calle. Sigue haciendo mucho frío.'), nl.
+
+accion(estado(tienda, Inv, stats(S, E, C), T), comprarCafeExtra,
+       estado(tienda, [cafeExtra | Inv], stats(S1, E1, C), T1)) :-
+    \+ miembro(cafeExtra, Inv),
+    E < 3,  %Solo lo puedes comprar si tu estrés es menor a 3
+    S1 is min(3, S + 1),  % El café sube el sueño y sube el estrés
+    E1 is min(3, E + 1),  
+    T1 is T + 1,
+    write('Compras un café y te lo tomas casi hirviendo. Te da el boost que necesitabas.'), nl,
+    write('[+ Sueño] [+ Estrés]'), nl.
 
 % «|» SECCIÓN 6 - condiciones fin juego
 % Detectar el final y enseñar qué final mostrar
