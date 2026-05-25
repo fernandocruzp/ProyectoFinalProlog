@@ -59,15 +59,20 @@ jugar(Patron, Intentos) :-
     format('Te quedan ~w intentos.~n', [Intentos]),
     write('Ingresa tu adivinanza de 5 colores: '),
     nl,
-    read(IntentoJugador),
+    catch(
+        read(IntentoJugador),
+        _Error,
+        IntentoJugador = entrada_invalida   % si explota, asigna un valor que falla validación
+    ),
     ( validar_intento(IntentoJugador) ->
         checar_intento(Patron, IntentoJugador, Resultado),
         IntentosRestantes is Intentos - 1,
         continuar(Resultado, Patron, IntentosRestantes)
     ;
-        format('~nIntento inválido. Asegúrate de ingresar exactamente 5 colores válidos sin repetir.~n~n'),
+        format('~nIntento inválido. Asegúrate de ingresar exactamente 5 colores válidos sin repetir. También checa que las comas esten correctamente posicionadas.~n~n'),
         jugar(Patron, Intentos)
     ).
+    
 
 continuar(ganador, _, _) :- !.
 
