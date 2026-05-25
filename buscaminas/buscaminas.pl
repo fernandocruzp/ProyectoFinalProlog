@@ -7,8 +7,9 @@
 %   Sanchez Ortiz Diego
 
 % La idea del juego es representar el tablero como una lista de casillas
-% cada casilla guarda su posicion y si esta cerrada, abierta o tiene mina
+% cada casilla guarda su posicion y si esta cerrada o abierta
 % casilla(X, Y, Estado) donde Estado = cerrada | abierta
+% las minas se representan aparte mediante hechos mina(X, Y)
 % cuando una casilla abierta tiene mina se muestra como _m_ en el tablero
 
 % Tablero 8x8, las minas estan fijas
@@ -72,6 +73,7 @@ generar_casillas(X, Y,
 
 % ----------------------------------------------------------
 % buscar_casilla(Tablero, X, Y, Estado)
+% busca la primera casilla que coincida con las coordenadas
 % ----------------------------------------------------------
 
 buscar_casilla(
@@ -87,6 +89,7 @@ buscar_casilla(
 % ----------------------------------------------------------
 % reemplazar_casilla
 % devuelve un tablero nuevo con la casilla modificada
+% el tablero original no se modifica
 % ----------------------------------------------------------
 
 reemplazar_casilla([], _, _, _, []).
@@ -119,6 +122,9 @@ vecinos_con_mina(X, Y, Lista) :-
          (1,-1),  (1,0),  (1,1)],
         Lista).
 
+% recorre las 8 direcciones vecinas y guarda
+% las coordenadas de las casillas con mina
+
 vecinos_con_mina_aux(_, _, [], []).
 
 vecinos_con_mina_aux(X, Y,
@@ -144,6 +150,7 @@ vecinos_con_mina_aux(X, Y,
 
 % ----------------------------------------------------------
 % longitud de lista
+% implementacion recursiva de longitud
 % ----------------------------------------------------------
 
 longitud([], 0).
@@ -162,6 +169,8 @@ minas_adyacentes(X, Y, N) :-
 
 % ----------------------------------------------------------
 % es_vacia(X, Y)
+% una casilla es vacia si no tiene mina
+% y no tiene minas adyacentes
 % ----------------------------------------------------------
 
 es_vacia(X, Y) :-
@@ -199,6 +208,7 @@ imprimir_casillas_fila(X, Y, Tablero) :-
 
 % ----------------------------------------------------------
 % dibujar_contenido
+% muestra el contenido visual de cada casilla
 % ----------------------------------------------------------
 
 dibujar_contenido(_, _, cerrada) :-
@@ -220,7 +230,8 @@ dibujar_contenido(X, Y, abierta) :-
 
 % ----------------------------------------------------------
 % gana(Tablero)
-% todas las casillas seguras estan abiertas
+% el jugador gana si todas las casillas sin mina
+% estan abiertas y las minas siguen cerradas
 % ----------------------------------------------------------
 
 gana([]).
@@ -245,6 +256,7 @@ inicio :-
 
 % ----------------------------------------------------------
 % bucle principal
+% solicita coordenadas y procesa la jugada
 % ----------------------------------------------------------
 
 bucle_juego(Tablero) :-
@@ -261,6 +273,9 @@ bucle_juego(Tablero) :-
 
 % ----------------------------------------------------------
 % procesar_jugada
+% las clausulas estan ordenadas de casos
+% mas especificos a mas generales
+% usando cut (!) para evitar backtracking
 % ----------------------------------------------------------
 
 % fuera del tablero
@@ -321,8 +336,8 @@ procesar_jugada(Tablero, X, Y) :-
 
 % ----------------------------------------------------------
 % expandir_abrir
-% si la casilla es vacia propaga a sus vecinos,
-% si no, no hay nada que expandir
+% si la casilla es vacia propaga automaticamente
+% la apertura hacia los vecinos seguros
 % ----------------------------------------------------------
 
 expandir_abrir(Tablero, X, Y, NuevoTablero) :-
@@ -343,6 +358,10 @@ expandir_vecinos(Tablero, X, Y, NuevoTablero) :-
          (0,-1),          (0,1),
          (1,-1),  (1,0),  (1,1)],
         NuevoTablero).
+
+% revisa vecino por vecino
+% si el vecino esta cerrado y no tiene mina se abre
+% si tambien es vacio la expansion continua recursivamente
 
 expandir_vecinos_aux(
     Tablero,

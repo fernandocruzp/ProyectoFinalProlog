@@ -10,9 +10,9 @@ Descripción:
     no hay minas a su alrededor esta no mostrará nada más que cambiará su estado a "abierto".
 
 Integrantes:
-    Ochoa Campos Ana Sofía
-    Real Araiza Yamile
-    Resendiz Linares Karen
+    Ochoa Campos Ana Sofía,
+    Real Araiza Yamile,
+    Resendiz Linares Karen y
     Sánchez Ortíz Diego.
 
 Instrucciones de uso:
@@ -29,7 +29,7 @@ Instrucciones de uso:
 
     Este será automático, va a mantener el juego en un bucle en el cual pedirá al usuario ingresar
     las coordenadas de la casilla que quiera seleccionar, el juego procesará estas coordenadas y
-    va a avisar si la jugada fue legal, si las coordenadas no son parte del tablero, o si pisó una
+    va a avisar si la jugada fue válida, si las coordenadas no son parte del tablero, o si pisó una
     mina.
 
     Si al realizar una selección se selecciona una casilla con una mina, el jugador habrá perdido
@@ -47,9 +47,10 @@ Reglas del juego:
 Reglas lógicas:
 
     El tablero se representa como una lista de términos casilla(X, Y, Estado) donde
-    Estado puede ser "cerrada" o "abierta". Cada jugada no modifica el tablero original,
-    sino que genera una lista nueva con el cambio aplicado, y esa nueva lista es la que
-    se pasa al siguiente turno.
+    Estado puede ser "cerrada" o "abierta". Las minas no forman parte del estado de
+    la casilla, sino que se representan aparte mediante hechos mina(X, Y).
+    Cada jugada no modifica el tablero original, sino que genera una lista nueva con
+    el cambio aplicado, y esa nueva lista es la que se pasa al siguiente turno.
 
     mina(X, Y)
         Son hechos fijos que indican qué casillas tienen mina. Todos los demás predicados
