@@ -553,4 +553,46 @@ batalla_final :-
         write("MIDIVLAR TE HA DERROTADO."), nl,
         write("Fin del juego."), nl,
         halt.
+/*
+ Texto de victoria y final del juego
+*/
+    victoria :-
+        nl,
+        write(" HAS DERROTADO A MIDIVLAR!"), nl,
+        nl,
+        write('Abres el cofre legendario...'), nl,
+        write('Dentro encuentras Mentitas sagradas.'), nl,
+        nl,
+        write("Te comes una mentita..."), nl,
+        write("Sientes la sabiduría llegar..."), nl,
+        write("..."), nl,
+        write("..."), nl,
+        lista_frases(Frases), % Carga la lista de frases
+        random_member(Frase, Frases), % Elige una aleatoriamente
+        write('"'), write(Frase), write('"'), nl, % Imprime la frase escogida       
+        write("Gracias por jugar."), nl,
+        halt.
 
+/*
+ Lógica para eventos especiales
+*/
+    evento_especial(chocolate_casero) :-
+        % Genera un número aleatorio entre 1 y 10 para determinar si el evento especial del chocolate casero se activa o no
+        random(1, 11, R),
+        (
+            R =< 10
+        ->
+            % El evento no se activa, el chocolate casero es robado por Garatso
+            retract(inventario(chocolate_casero)),
+            nl,
+            write("GARATSO APARECE DE LA NADA!"), nl,
+            write("Te robó el Chocolate Casero."), nl
+        ;
+            % El evento se activa, el chocolate casero te protege de un error en la batalla final
+            assertz(chocolate_protegido), % Añade el estado de protección del chocolate al estado del juego
+            nl,
+            write("El Chocolate Casero te protegera"), nl,
+            write("de un error en la batalla final."), nl
+        ).
+
+    evento_especial(_).
