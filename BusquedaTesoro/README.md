@@ -102,3 +102,14 @@ Restricciones lógicas: Genera dos lugares aleatorios distintos del mapa mediant
 
 
 6. Gameplay
+![Inicio de la partida](fotos/inicio.png)
+
+![Primer movimiento](fotos/movimiento1.png)
+
+![Segundo movimiento](fotos/movimiento2.png)
+
+![Hablar con personaje y movimiento](fotos/hablar.png)
+
+![Batalla final](fotos/pregunta1-2.png)
+
+![Fin de la partida](fotos/pregunta3.png)
