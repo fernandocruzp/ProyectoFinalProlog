@@ -1,10 +1,6 @@
 % 1. Se define el Tablero: K6
-vertice(a). 
-vertice(b). 
-vertice(c). 
-vertice(d). 
-vertice(e). 
-vertice(f).
+vertice(a). vertice(b). vertice(c). 
+vertice(d). vertice(e). vertice(f).
 
 arista(X, Y) :- vertice(X), vertice(Y), X \= Y.
 
@@ -58,6 +54,9 @@ libres(Estado, X, Y) :-
     X @< Y,
     \+ arista_ocupada(X, Y, Estado).
 
+% Recopila en una lista todos los movimientos disponibles de un solo golpe (usamos findall para empaquetarlos).
+movimientos_validos(Estado, _Jugador, Lista) :-
+    findall((X, Y), libres(Estado, X, Y), Lista).
 
 % 6. Condiciones de victoria y derrota.
 
@@ -88,3 +87,40 @@ jugador_gana(j2, Estado) :- jugador_pierde(j1, Estado).
 fin_juego(Estado) :- jugador_pierde(j1, Estado).
 fin_juego(Estado) :- jugador_pierde(j2, Estado).
 
+% 7. Visualizacion del tablero.
+
+% Estas son cosas que no vimos en clase pero investigando en la documentación de Prolog usamos: 
+% write(X) — imprime X tal cual, sin formato.
+% nl — imprime un salto de línea.
+% format(Fmt, Args)— imprime con plantilla; Args es una lista de valores.
+%   ~w — reemplaza este marcador con el siguiente valor de Args.
+%   ~n — salto de línea dentro de la plantilla.
+
+imprimir_tablero(Estado) :-
+    Estado = estado(Turno, _, _),
+    nl,
+    write('=== LOOP  K6 ==='), nl,
+    format('Turno: ~w    1=J1  2=J2  .=libre~n~n', [Turno]), % ~w <- Turno
+    write('    a  b  c  d  e  f'), nl,
+    imprimir_filas([a,b,c,d,e,f], Estado), nl.
+
+imprimir_filas([], _).
+imprimir_filas([X|Xs], Estado) :-
+    format('~w [ ', [X]),           % ~w <- vértice de la fila (a, b, ...)
+    imprimir_celdas(X, [a,b,c,d,e,f], Estado),
+    write(']'), nl,
+    imprimir_filas(Xs, Estado).
+
+imprimir_celdas(_, [], _).
+imprimir_celdas(X, [Y|Ys], Estado) :-
+    celda(X, Y, Estado, C),
+    format('~w  ', [C]),             % ~w <- símbolo de la celda (-, 1, 2 o .)
+    imprimir_celdas(X, Ys, Estado).
+
+% El ! (corte) evita que Prolog siga buscando otras cláusulas una vez que coincide.
+celda(X, X, _, '-') :- !.          % diagonal: mismo vértice
+celda(X, Y, estado(_, AJ1, _), '1') :-
+    ( member(edge(X,Y), AJ1) ; member(edge(Y,X), AJ1) ), !.
+celda(X, Y, estado(_, _, AJ2), '2') :-
+    ( member(edge(X,Y), AJ2) ; member(edge(Y,X), AJ2) ), !.
+celda(_, _, _, '.').                % caso base: celda libre
