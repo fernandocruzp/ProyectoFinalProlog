@@ -49,7 +49,7 @@ en_tablero(X, Y) :-
 
 % ----------------------------------------------------------
 % Tablero inicial
-% genera la lista con todas las casillas en estado cerrada
+% Genera la lista con todas las casillas en estado cerrada
 % usamos recursion igual que en clase con las listas
 % ----------------------------------------------------------
 
@@ -91,7 +91,7 @@ reemplazar_casilla([casilla(X, Y, _) | Resto], X, Y, Nuevo,
                   [casilla(X, Y, Nuevo) | Resto]) :- !.
 reemplazar_casilla([C | Resto], X, Y, Nuevo, [C | RestoNuevo]) :-
     reemplazar_casilla(Resto, X, Y, Nuevo, RestoNuevo).
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 % ----------------------------------------------------------
 % minas_adyacentes(X, Y, N)
 % cuenta cuantas minas hay alrededor de la casilla (X, Y)
@@ -173,9 +173,69 @@ es_vacia(X, Y) :-
     \+ mina(X, Y),
     minas_adyacentes(X, Y, 0).
 
-% Imprime el tablero...
+% ----------------------------------------------------------
+% consulta(Tablero)
+% imprime el tablero
+% ----------------------------------------------------------
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
+consulta(Tablero) :-
+    write('   ___ ___ ___ ___ ___ ___ ___ ___\n'),
+    imprimir_filas(8, Tablero),
+    write('    1   2   3   4   5   6   7   8\n\n').
+
+imprimir_filas(0, _) :- !.
+
+imprimir_filas(Y, Tablero) :-
+    write(Y),
+    write(' '),
+    imprimir_casillas_fila(1, Y, Tablero),
+    write('|\n'),
+    Y1 is Y - 1,
+    imprimir_filas(Y1, Tablero).
+
+imprimir_casillas_fila(9, _, _) :- !.
+
+imprimir_casillas_fila(X, Y, Tablero) :-
+    buscar_casilla(Tablero, X, Y, Estado),
+    dibujar_contenido(X, Y, Estado),
+    X1 is X + 1,
+    imprimir_casillas_fila(X1, Y, Tablero).
+
+% ----------------------------------------------------------
+% dibujar_contenido
+% ----------------------------------------------------------
+
+dibujar_contenido(_, _, cerrada) :-
+    write('|___').
+
+dibujar_contenido(X, Y, abierta) :-
+    mina(X, Y), !,
+    write('|_m_').
+
+dibujar_contenido(X, Y, abierta) :-
+    minas_adyacentes(X, Y, N),
+    (
+        N > 0
+    ->
+        format('|_~w_', [N])
+    ;
+        write('|_*_')
+    ).
+
+% ----------------------------------------------------------
+% gana(Tablero)
+% todas las casillas seguras estan abiertas
+% ----------------------------------------------------------
+
+gana([]).
+
+gana([casilla(X, Y, abierta) | Resto]) :-
+    \+ mina(X, Y),
+    gana(Resto).
+
+gana([casilla(X, Y, cerrada) | Resto]) :-
+    mina(X, Y),
+    gana(Resto).
 
 % ----------------------------------------------------------
 % inicio del juego
