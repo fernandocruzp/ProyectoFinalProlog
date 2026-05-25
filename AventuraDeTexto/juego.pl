@@ -104,6 +104,23 @@ describir(estado(pasillo,Inv,_,_)) :-
             write('El pasillo está vacío ahora que Rodrigo bajó corriendo.')
     ), nl.
 
+%---- Descripcion de la Calle ----
+describir(estado(calle,Inv,_,_)) :-
+    nl, write('--- LOCACIÓN: La calle hacia la Facultad ---'), nl,
+    write('Puedes ver un amanecer hermoso. Pero hace mucho frío, algo caliente no te caería mal, o si?'), nl,
+    write('A tu derecha hay una tienda abierta.'), nl.
+
+%---- Descripcion de la Tienda ----
+describir(estado(tienda,Inv,_,_)) :-
+    nl, write('--- LOCACIÓN: La tienda ---'), nl,
+    write('Adentro de la tienda esta calientito.'), nl,
+    ( 
+        \+ miembro(cafeExtra, Inv) ->
+        write('La máquina de café está lista para ti.')
+        ;
+        write('Ya compraste tu café extra, te sientes como nuevo.')
+    ), nl.
+
 % ---Descripcion de entradaFacultad
 
 describir(estado(entradaFacultad, _, _, _)) :-
