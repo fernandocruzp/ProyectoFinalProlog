@@ -199,6 +199,28 @@ jugar :-
     writeln('Se han desplegado ambos tableros con 4 barcos aleatorios (tamaños 2 y 3).'),
     ciclo_juego.
 
+
+% LECTURA SEGURA DE COORDENADAS (PREVENCION DE ERRORES DE SINTAXIS)
+
+% Lee la entrada del usuario y garantiza regresar un número natural entre 0 y 4.
+leer_coordenada(Mensaje, Valor) :-
+    writeln(Mensaje),
+    read_line_to_codes(user_input, Codes),
+    % catch/3 intenta ejecutar number_codes; si falla (error de tipo/sintaxis), asigna Valor = -1
+    catch(number_codes(Num, Codes), _, Num = -1),
+    % Validamos rigurosamente que sea un entero y esté dentro del mapa (0-4)
+    integer(Num), Num >= 0, Num =< 4, !, 
+    Valor = Num.
+
+% Si no es un número entero o está fuera de rango, se activa esta regla recursiva:
+leer_coordenada(Mensaje, Valor) :-
+    writeln('*** Entrada inválida. Debe ser un número entero entre 0 y 4. ***'),
+    leer_coordenada(Mensaje, Valor).
+
+
+% BUCLE PRINCIPAL DEL JUEGO
+
+
 ciclo_juego :-
     tablero_computadora(TC),
     tablero_jugador(TJ),
@@ -211,43 +233,53 @@ ciclo_juego :-
     writeln('\nEstado actual del radar enemigo:'),
     mostrar_tablero_oculto(TC),
     
-% --- TURNO DEL JUGADOR ---
-    writeln('\n--- TU TURNO ---'),
-    writeln('Ingresa la Fila (0-4):'), 
-    read_line_to_codes(user_input, CodesFila), number_codes(Fila, CodesFila),
-    writeln('Ingresa la Columna (0-4):'), 
-    read_line_to_codes(user_input, CodesCol), number_codes(Columna, CodesCol),
+    % --- TURNO DEL JUGADOR ---
+    solicitar_disparo_valido(TC, Fila, Columna),
     
-    (Fila >= 0, Fila =< 4, Columna >= 0, Columna =< 4 ->
-        retract(tablero_computadora(TC)),
-        recibir_disparo(TC, Fila, Columna, NTC),
-        asserta(tablero_computadora(NTC)),
+    retract(tablero_computadora(TC)),
+    recibir_disparo(TC, Fila, Columna, NTC),
+    asserta(tablero_computadora(NTC)),
+    
+    % Verificamos si el jugador ganó con ese tiro
+    (not(quedan_barcos(NTC)) -> 
+        writeln('\n===================================='),
+        writeln('¡TODOS LOS BARCOS ENEMIGOS HUNDIDOS!'),
+        writeln('¡HAS GANADO EL JUEGO!'),
+        writeln('====================================')
+    ;
+        % --- TURNO DE LA COMPUTADORA ---
+        writeln('\n--- TURNO DE LA COMPUTADORA ---'),
+        retract(tablero_jugador(TJ)),
+        ataque_computadora(TJ, NTJ),
+        asserta(tablero_jugador(NTJ)),
         
-        % Verificamos si el jugador ganó con ese tiro
-        (not(quedan_barcos(NTC)) -> 
+        % Verificamos si la computadora ganó con ese tiro
+        (not(quedan_barcos(NTJ)) ->
             writeln('\n===================================='),
-            writeln('¡TODOS LOS BARCOS ENEMIGOS HUNDIDOS!'),
-            writeln('¡HAS GANADO EL JUEGO!'),
+            writeln('¡TODOS TUS BARCOS HAN SIDO HUNDIDOS!'),
+            writeln('LA COMPUTADORA GANA. Más suerte la próxima.'),
             writeln('====================================')
         ;
-            % --- TURNO DE LA COMPUTADORA ---
-            writeln('\n--- TURNO DE LA COMPUTADORA ---'),
-            retract(tablero_jugador(TJ)),
-            ataque_computadora(TJ, NTJ),
-            asserta(tablero_jugador(NTJ)),
-            
-            % Verificamos si la computadora ganó con ese tiro
-            (not(quedan_barcos(NTJ)) ->
-                writeln('\n===================================='),
-                writeln('¡TODOS TUS BARCOS HAN SIDO HUNDIDOS!'),
-                writeln('LA COMPUTADORA GANA. Más suerte la próxima.'),
-                writeln('====================================')
-            ;
-                % Si nadie ha ganado, el ciclo continúa de forma recursiva
-                ciclo_juego
-            )
+            % Si nadie ha ganado, el ciclo continúa de forma recursiva
+            ciclo_juego
         )
-    ;
-        writeln('Coordenadas inválidas. Intenta de nuevo.'),
-        ciclo_juego
     ).
+
+
+% VALIDACIÓN DE DISPAROS REPETIDOS (JUGADOR)
+
+% Valida que el jugador no gaste su turno en una coordenada ya atacada
+solicitar_disparo_valido(Tablero, Fila, Columna) :-
+    writeln('\n--- TU TURNO ---'),
+    leer_coordenada('Ingresa la Fila (0-4):', F),
+    leer_coordenada('Ingresa la Columna (0-4):', C),
+    obtener_celda(Tablero, F, C, Celda),
+    % Si es agua oculta (w) o barco intacto (s), la coordenada es válida
+    (Celda == w ; Celda == s), !,
+    Fila = F,
+    Columna = C.
+
+% Si la celda es 'x' o 'm', el corte (!) anterior no se ejecuta y entra aquí:
+solicitar_disparo_valido(Tablero, Fila, Columna) :-
+    writeln('*** Ya disparaste a esa coordenada. Elige una posición distinta. ***'),
+    solicitar_disparo_valido(Tablero, Fila, Columna).
