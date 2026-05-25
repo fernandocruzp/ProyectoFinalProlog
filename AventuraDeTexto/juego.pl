@@ -201,6 +201,28 @@ accionDisponiblePasillo(Inv,_,hablarConRodrigo) :-
 accionDisponiblePasillo(Inv,_,examinarPuertas) :- 
     \+ miembro(papelesVecinos, Inv).
 
+%Acciones disponibles desde la Calle
+accionesValidas(estado(calle,Inv,_,_), Acciones) :-
+    findall(A, accionDisponibleCalle(Inv, A), Acciones).
+
+%Ir a la facultad
+accionDisponibleCalle(_, irAFacultad).
+
+% o ir a la tienda
+accionDisponibleCalle(_, entrarATienda).
+
+%Acciones disponibles en la Tienda
+accionesValidas(estado(tienda, Inv, stats(_, E, _), _), Acciones) :-
+    findall(A, accionDisponibleTienda(Inv, E, A), Acciones).
+
+%Salir del la tienda
+accionDisponibleTienda(_, _, salirTienda). 
+
+%Comprar el café extra
+accionDisponibleTienda(Inv,E,comprarCafeExtra) :-
+    \+ miembro(cafeExtra, Inv),
+    E < 3.  %SOlo puedes comprar el café extra si tu estrés es menor a 3
+
 % Acciones entradaFacultad 
 accionesValidas(estado(entradaFacultad, Inv, _, _), Acciones) :-
     findall(A, accionDisponibleEntrada(Inv, A), Acciones).
