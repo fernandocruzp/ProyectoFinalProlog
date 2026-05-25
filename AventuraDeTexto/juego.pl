@@ -121,11 +121,6 @@ describir(estado(tienda,Inv,_,_)) :-
         write('Ya compraste tu café extra, te sientes como nuevo.')
     ), nl.
 
-% ---Descripcion de entradaFacultad
-
-describir(estado(entradaFacultad, _, _, _)) :-
-    nl, write('--- LOCACIÓN: Entrada de la Facultad ---'), nl,
-    write('El edificio está más lleno de lo normal. Ves al conserje en su caseta.'), nl.
 
 % ---Descripcion de labComputo
 
@@ -223,16 +218,7 @@ accionDisponibleTienda(Inv,E,comprarCafeExtra) :-
     \+ miembro(cafeExtra, Inv),
     E < 3.  %SOlo puedes comprar el café extra si tu estrés es menor a 3
 
-% Acciones entradaFacultad 
-accionesValidas(estado(entradaFacultad, Inv, _, _), Acciones) :-
-    findall(A, accionDisponibleEntrada(Inv, A), Acciones).
 
-accionDisponibleEntrada(_, irAlPasilloFinal).
-accionDisponibleEntrada(_, irALabComputo).
-accionDisponibleEntrada(_, irABiblioteca).
-accionDisponibleEntrada(_, irACafeteria).
-accionDisponibleEntrada(Inv, hablarConConserje) :-
-    \+ miembro(pistaConserje, Inv).
 
 % Acciones labComputo
 accionesValidas(estado(labComputo, Inv, _, _), Acciones) :-
@@ -378,6 +364,76 @@ accion(estado(tienda, Inv, stats(S, E, C), T), comprarCafeExtra,
     T1 is T + 1,
     write('Compras un café y te lo tomas casi hirviendo. Te da el boost que necesitabas.'), nl,
     write('[+ Sueño] [+ Estrés]'), nl.
+
+% --- LAB DE CÓMPUTO ---
+
+accion(estado(labComputo, Inv, stats(S, E, C), T), tomarUsb,
+       estado(labComputo, [usb | Inv], stats(S, E, C1), T1)) :-
+    \+ miembro(usb, Inv),
+    C1 is min(3, C + 1),
+    T1 is T + 1,
+    write('Tomas el USB. Tiene una etiqueta que dice "VLAD-EXPO".'), nl,
+    write('[+ Conocimiento] [USB obtenido]'), nl.
+
+accion(estado(labComputo, Inv, stats(S, E, C), T), leerPantalla,
+       estado(labComputo, [pistaLab | Inv], stats(S, E, C1), T1)) :-
+    \+ miembro(pistaLab, Inv),
+    C1 is min(3, C + 1),
+    T1 is T + 1,
+    write('La pantalla muestra un mensaje: "Sesión iniciada: vhernandez@facultad"'), nl,
+    write('[+ Conocimiento] [Pista 3/3 obtenida]'), nl.
+
+accion(estado(labComputo, Inv, Stats, T), salirDelLab,
+       estado(entradaFacultad, Inv, Stats, T1)) :-
+    T1 is T + 1,
+    write('Sales del laboratorio.'), nl.
+
+% --- BIBLIOTECA ---
+
+accion(estado(biblioteca, Inv, stats(S, E, C), T), tomarHojaTrampa,
+       estado(biblioteca, [hojaTrampa | Inv], stats(S, E1, C), T1)) :-
+    \+ miembro(hojaTrampa, Inv),
+    E1 is max(0, E - 1),
+    T1 is T + 1,
+    write('Doblas la hoja y la guardas. Te sientes un poco mejor... o eso crees.'), nl,
+    write('[- Estrés] [hojaTrampa obtenida]'), nl.
+
+accion(estado(biblioteca, Inv, stats(S, E, C), T), repasarApuntes,
+       estado(biblioteca, Inv, stats(S, E1, C1), T2)) :-
+    E1 is max(0, E - 1),
+    C1 is min(3, C + 1),
+    T2 is T + 2,          % cuesta 2 turnos según el diseño
+    write('Repasas todo. Tu cabeza empieza a ordenarse.'), nl,
+    write('[- Estrés] [+ Conocimiento] (2 turnos)'), nl.
+
+accion(estado(biblioteca, Inv, Stats, T), salirDeBiblioteca,
+       estado(entradaFacultad, Inv, Stats, T1)) :-
+    T1 is T + 1,
+    write('Sales de la biblioteca.'), nl.
+
+% --- CAFETERÍA ---
+
+accion(estado(cafeteria, Inv, stats(S, E, C), T), hablarConEquipo,
+       estado(cafeteria, Inv, stats(S, E1, C1), T1)) :-
+    E1 is max(0, E - 1),
+    C1 is min(3, C + 1),
+    T1 is T + 1,
+    write('Tu equipo te pone al día. Sientes que no estás tan perdido.'), nl,
+    write('[- Estrés] [+ Conocimiento]'), nl.
+
+accion(estado(cafeteria, Inv, stats(S, E, C), T), tomarCafeCafeteria,
+       estado(cafeteria, Inv, stats(S1, E1, C), T1)) :-
+    S1 is min(3, S + 1),
+    E1 is min(3, E + 1),
+    T1 is T + 1,
+    write('El café sabe a rayos pero te despierta.'), nl,
+    write('[+ Sueño] [+ Estrés]'), nl.
+
+accion(estado(cafeteria, Inv, Stats, T), salirDeCafeteria,
+       estado(entradaFacultad, Inv, Stats, T1)) :-
+    T1 is T + 1,
+    write('Sales de la cafetería.'), nl.
+    
 
 % «|» SECCIÓN 6 - condiciones fin juego
 % Detectar el final y enseñar qué final mostrar
