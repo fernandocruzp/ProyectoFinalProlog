@@ -159,6 +159,45 @@ accionDisponiblePasillo(_, salirCalle).
 accionDisponiblePasillo(Inv, hablarConRodrigo) :-
     \+ miembro(rodrigoHablo, Inv).
 
+% Acciones entradaFacultad 
+accionesValidas(estado(entradaFacultad, Inv, _, _), Acciones) :-
+    findall(A, accionDisponibleEntrada(Inv, A), Acciones).
+
+accionDisponibleEntrada(_, irAlPasilloFinal).
+accionDisponibleEntrada(_, irALabComputo).
+accionDisponibleEntrada(_, irABiblioteca).
+accionDisponibleEntrada(_, irACafeteria).
+accionDisponibleEntrada(Inv, hablarConConserje) :-
+    \+ miembro(pistaConserje, Inv).
+
+% Acciones labComputo
+accionesValidas(estado(labComputo, Inv, _, _), Acciones) :-
+    findall(A, accionDisponibleLab(Inv, A), Acciones).
+
+accionDisponibleLab(_, salirDelLab).
+accionDisponibleLab(Inv, tomarUsb) :-
+    \+ miembro(usb, Inv).
+accionDisponibleLab(Inv, leerPantalla) :-
+    \+ miembro(pistaLab, Inv).
+
+% Acciones biblioteca 
+accionesValidas(estado(biblioteca, Inv, _, _), Acciones) :-
+    findall(A, accionDisponibleBiblioteca(Inv, A), Acciones).
+
+accionDisponibleBiblioteca(_, salirDeBiblioteca).
+accionDisponibleBiblioteca(Inv, tomarHojaTrampa) :-
+    \+ miembro(hojaTrampa, Inv).
+accionDisponibleBiblioteca(_, repasarApuntes).
+
+% Acciones cafeteria 
+accionesValidas(estado(cafeteria, Inv, stats(_, E, _), _), Acciones) :-
+    findall(A, accionDisponibleCafeteria(Inv, E, A), Acciones).
+
+accionDisponibleCafeteria(_, salirDeCafeteria).
+accionDisponibleCafeteria(_, hablarConEquipo).
+accionDisponibleCafeteria(_, tomarCafeCafeteria).
+
+
 
 % «|» SECCIÓN 5 - TRANSiciones
 % define cómo cambia el estado.
