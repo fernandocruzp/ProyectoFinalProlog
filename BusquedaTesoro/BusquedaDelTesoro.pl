@@ -515,3 +515,42 @@ verificar_tesoro.
         write("¿Cuál puerta es la que salva al prisionero?, ¿La 1 o la 2?"), nl,
         read(R),
         verificar_respuesta(R, 2).
+
+/*
+  Lógica para la batlla contra Midivlar
+*/
+batalla_final :-
+    nl,
+    write("MIDIVLAR: RESPONDE MIS ACERTIJOS!"), nl,
+    write("Responde 1 si es tautología y 2 si no."), nl,
+    pregunta_1, 
+    pregunta_2,
+    pregunta_3,
+    victoria. % Si el jugador responde correctamente las tres preguntas, se llama a la función de victoria
+
+/*
+ Lógica para la verificación de respuestas
+*/
+    % Si son iguales imprime correcto
+    verificar_respuesta(R, R) :-
+        nl,
+        write("Correcto."), nl, 
+        !.
+
+    % Si son diferentes pero tiene el chocolate se salva
+    verificar_respuesta(_, _) :-
+        chocolate_protegido, % Verifica si el chocolate casero esta protegiendo al jugador
+        retract(chocolate_protegido), % Elimina el estado de protección del chocolate 
+        nl,
+        write("Fallaste..."), nl,
+        write("Pero el Chocolate Casero te salvo!"), nl,
+        !.
+
+    % Si son diferentes imprime que el jugador fue derrotado y acaba la partida.
+    verificar_respuesta(_, _) :-
+        nl,
+        write("MIDIVLAR: Incorrecto, no mereces mi preciada sabiduría!"), nl,
+        write("MIDIVLAR TE HA DERROTADO."), nl,
+        write("Fin del juego."), nl,
+        halt.
+
