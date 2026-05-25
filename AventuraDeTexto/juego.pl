@@ -92,6 +92,35 @@ describir(estado(cuarto,Inv,_,_)) :-
 %
 % Podemos hacer un cambio de texto dependiendo de (miembro(algo,Inv) -> write('Si sí está') ; write('Si no está'))
 
+% ---Descripcion de entradaFacultad
+
+describir(estado(entradaFacultad, _, _, _)) :-
+    nl, write('--- LOCACIÓN: Entrada de la Facultad ---'), nl,
+    write('El edificio está más lleno de lo normal. Ves al conserje en su caseta.'), nl.
+
+% ---Descripcion de labComputo
+
+describir(estado(labComputo, Inv, _, _)) :-
+    nl, write('--- LOCACIÓN: Laboratorio de Cómputo ---'), nl,
+    (miembro(usb, Inv) ->
+        write('Ya tienes el USB. Las pantallas siguen encendidas.')
+    ;
+        write('Las computadoras están encendidas. Hay un USB olvidado en una de ellas.')
+    ), nl.
+    
+% ---Descripcion de biblioteca
+
+describir(estado(biblioteca, _, _, _)) :-
+    nl, write('--- LOCACIÓN: Biblioteca ---'), nl,
+    write('Silencio sepulcral. Algunos estudiantes repasan apuntes con cara de pánico.'), nl.
+
+% ---Descripcion de cafeteria
+
+describir(estado(cafeteria, _, _, _)) :-
+    nl, write('--- LOCACIÓN: Cafetería ---'), nl,
+    write('Huele a café quemado. Tu equipo está en una mesa al fondo.'), nl.
+
+    
 
 % «|» SECCIÓN 4 - acciones disponibles
 % lista de acciones en las que se puede hacer desde cada ubicación.
