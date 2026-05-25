@@ -124,3 +124,4 @@ celda(X, Y, estado(_, AJ1, _), '1') :-
 celda(X, Y, estado(_, _, AJ2), '2') :-
     ( member(edge(X,Y), AJ2) ; member(edge(Y,X), AJ2) ), !.
 celda(_, _, _, '.').                % caso base: celda libre
+
