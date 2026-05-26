@@ -30,27 +30,39 @@ evaluar_intento(Secreto, Intento, Negras, Blancas) :-
 %         BÚFER
 % ==========================================
 
+% 1. Definimos el diccionario de colores permitidos
+color_valido(Color) :-
+    member(Color, [rojo, azul, verde, amarillo, naranja, morado]).
+
+% 2. Verificamos recursivamente que cada elemento de la lista sea un color valido
+colores_validos([]).
+colores_validos([H|T]) :-
+    color_valido(H),
+    colores_validos(T).
+
+% 3. Actualizamos la validacion principal para incluir el chequeo de colores
 patron_valido(Patron) :-
     is_list(Patron),
-    length(Patron, 4).
+    length(Patron, 4),
+    colores_validos(Patron).
 
 pedir_secreto(Secreto) :-
-    write('Introduce tu patron secreto de 4 colores: '), nl, % <--- TU SALTO DE LINEA AQUI
+    write('Introduce tu patron secreto de 4 colores: '), nl, 
     read(Input),
     (   patron_valido(Input) -> 
         Secreto = Input
     ;   
-        write('>>> ERROR: Formato incorrecto. Coloca 4 colores dentro de corchetes.'), nl,
+        write('>>> ERROR: Deben ser 4 colores validos (rojo, azul, verde, amarillo, naranja, morado) en corchetes.'), nl,
         pedir_secreto(Secreto)
     ).
 
 pedir_intento(Intento) :-
-    write('JUGADOR 2, Introduce tu intento: '), nl, % <--- TU SALTO DE LINEA AQUI
+    write('JUGADOR 2, Introduce tu intento: '), nl, 
     read(Input),
     (   patron_valido(Input) -> 
         Intento = Input
     ;   
-        write('>>> ERROR: Formato incorrecto. Coloca 4 colores dentro de corchetes.'), nl,
+        write('>>> ERROR: Deben ser 4 colores validos (rojo, azul, verde, amarillo, naranja, morado) en corchetes.'), nl,
         pedir_intento(Intento)
     ).
 
