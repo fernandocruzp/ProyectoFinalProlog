@@ -121,6 +121,10 @@ describir(estado(tienda,Inv,_,_)) :-
         write('Ya compraste tu café extra, te sientes como nuevo.')
     ), nl.
 
+describir(estado(entradaFacultad, _, _, _)) :-
+    nl, write('--- LOCACIÓN: Entrada de la Facultad ---'), nl,
+    write('El edificio está más lleno de lo normal. Ves al conserje en su caseta.'), nl.
+
 
 % ---Descripcion de labComputo
 
@@ -222,7 +226,16 @@ accionDisponibleTienda(Inv,E,comprarCafeExtra) :-
     \+ miembro(cafeExtra, Inv),
     E < 3.  %SOlo puedes comprar el café extra si tu estrés es menor a 3
 
+% Acciones entradaFacultad
+accionesValidas(estado(entradaFacultad, Inv, _, _), Acciones) :-
+    findall(A, accionDisponibleEntrada(Inv, A), Acciones).
 
+accionDisponibleEntrada(_, irAlPasilloFinal).
+accionDisponibleEntrada(_, irALabComputo).
+accionDisponibleEntrada(_, irABiblioteca).
+accionDisponibleEntrada(_, irACafeteria).
+accionDisponibleEntrada(Inv, hablarConConserje) :-
+    \+ miembro(pistaConserje, Inv).
 
 % Acciones labComputo
 accionesValidas(estado(labComputo, Inv, _, _), Acciones) :-
@@ -376,6 +389,36 @@ accion(estado(tienda, Inv, stats(S, E, C), T), comprarCafeExtra,
     write('Compras un café y te lo tomas casi hirviendo. Te da el boost que necesitabas.'), nl,
     write('[+ Sueño] [+ Estrés]'), nl.
 
+% --- ENTRADA FACULTAD ---
+
+accion(estado(entradaFacultad, Inv, stats(S, E, C), T), hablarConConserje,
+       estado(entradaFacultad, [pistaConserje | Inv], stats(S, E, C1), T1)) :-
+    \+ miembro(pistaConserje, Inv),
+    C1 is min(3, C + 1),
+    T1 is T + 1,
+    write('El conserje te dice que varias personas preguntaron por el lab esta mañana.'), nl,
+    write('[+ Conocimiento] [Pista 2/3 obtenida]'), nl.
+
+accion(estado(entradaFacultad, Inv, Stats, T), irALabComputo,
+       estado(labComputo, Inv, Stats, T1)) :-
+    T1 is T + 1,
+    write('Entras al laboratorio de cómputo.'), nl.
+
+accion(estado(entradaFacultad, Inv, Stats, T), irABiblioteca,
+       estado(biblioteca, Inv, Stats, T1)) :-
+    T1 is T + 1,
+    write('Entras a la biblioteca.'), nl.
+
+accion(estado(entradaFacultad, Inv, Stats, T), irACafeteria,
+       estado(cafeteria, Inv, Stats, T1)) :-
+    T1 is T + 1,
+    write('Bajas a la cafetería.'), nl.
+
+accion(estado(entradaFacultad, Inv, Stats, T), irAlPasilloFinal,
+       estado(pasilloFacultad, Inv, Stats, T1)) :-
+    T1 is T + 1,
+    write('Subes al pasillo donde está el salón de Vlad.'), nl.
+    
 % --- LAB DE CÓMPUTO ---
 
 accion(estado(labComputo, Inv, stats(S, E, C), T), tomarUsb,
