@@ -33,10 +33,10 @@ Para jugar a Loop, no se requiere interfaz gráfica (pero se agrego una minimali
 * **jugador_gana/2 y fin_juego/1:** Evalúan las condiciones de victoria y derrota. Si la función detecta que el jugador en turno cerró un triángulo, automáticamente declara ganador al jugador contrario.
 * **imprimir_tablero/1:** Toma el estado actual y dibuja en consola una matriz de adyacencia de 6x6 que representa visualmente el K6, marcando las casillas con "1" para el Jugador 1, "2" para el Jugador 2, o "." si están libres.
 
-## Ejemplo 1
-A continuación se muestra una simulación de partida desde la consola. En este ejemplo, el Jugador 1 comete un error en su tercer turno cerrando un triángulo entre los vértices 'a', 'b' y 'c', lo que le da la victoria al Jugador 2.
-
+## Ejemplos de Simulación
+A continuación se muestra una simulación de partida desde la consola.
 ```prolog
+   %En este ejemplo, el Jugador 1 comete un error y crear un tringulo de su color
 ?- % 1. Estado inicial vacío (Turno J1)
    E0 = estado(j1, [], []),
    
@@ -61,10 +61,9 @@ A continuación se muestra una simulación de partida desde la consola. En este 
    % 8. Verificamos quién ganó
    jugador_gana(Ganador, EFinal).
 
-## Ejemplo 2
-A continuación se presenta una simulación de juego más larga, donde el J2 aplica la estrategia ganadora (dejar sus vertices con el menor grado de su color posible), forzando al jugador 1 a formar un triangulo.
+   %Ejemplo 2
+   %A continuación se presenta una simulación de juego más larga, donde el J2 aplica la estrategia ganadora (dejar sus vertices con el menor grado de su color posible), forzando al J1 a generar un triangulo
 
-```prolog
 ?- % 1. Estado inicial vacío (Turno J1)
    E0 = estado(j1, [], []),
 
