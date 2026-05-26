@@ -121,14 +121,12 @@ describir(estado(tienda,Inv,_,_)) :-
         write('Ya compraste tu café extra, te sientes como nuevo.')
     ), nl.
 
-$ ---Descripcion de entradaFaultad
+%---- Descripcion de la Entrada a la Facultad ----
 describir(estado(entradaFacultad, _, _, _)) :-
     nl, write('--- LOCACIÓN: Entrada de la Facultad ---'), nl,
-    write('El edificio está más lleno de lo normal. Ves al conserje en su caseta.'), nl.
+    write('Las puertas están abiertas. Puedes ir al lab, la biblioteca o la cafetería.'), nl.
 
-
-% ---Descripcion de labComputo
-
+% ---Descripcion de labComputo ----
 describir(estado(labComputo, Inv, _, _)) :-
     nl, write('--- LOCACIÓN: Laboratorio de Cómputo ---'), nl,
     (miembro(usb, Inv) ->
@@ -137,26 +135,45 @@ describir(estado(labComputo, Inv, _, _)) :-
         write('Las computadoras están encendidas. Hay un USB olvidado en una de ellas.')
     ), nl.
     
-% ---Descripcion de biblioteca
-
+% ---Descripcion de biblioteca ----
 describir(estado(biblioteca, _, _, _)) :-
     nl, write('--- LOCACIÓN: Biblioteca ---'), nl,
     write('Silencio sepulcral. Algunos estudiantes repasan apuntes con cara de pánico.'), nl.
 
-% ---Descripcion de cafeteria
-
+% ---Descripcion de cafeteria ----
 describir(estado(cafeteria, _, _, _)) :-
     nl, write('--- LOCACIÓN: Cafetería ---'), nl,
     write('Huele a café quemado. Tu equipo está en una mesa al fondo.'), nl.
 
-describir(estado(entradaFacultad, _, _, _)) :-
-    nl, write('--- LOCACIÓN: Entrada de la Facultad ---'), nl,
-    write('Las puertas están abiertas. Puedes ir al lab, la biblioteca o la cafetería.'), nl.
+% --- Descripcion del pasillo de la Facultad ---
+describir(estado(pasilloFacultad, _, _, _)) :-
+    nl, write('--- LOCACIÓN: Pasillo de la Facultad ---'), nl,
+    write('Estás afuera del salón, escuchas murmullos y la puerta está entreabierta.'), nl,
+    write('Es el último pasillo antes de entrar a exponer.'), nl.
+
+% --- Descripcion del salón de Vlad ---
+describir(estado(salonVlad, Inv, stats(_, E, _), _)) :-
+    nl, write('--- LOCACIÓN: Salón de Vlad ---'), nl,
+    write('El salón está frío, ves a el buen Vlad hasta en frente sentado revisando su libreta en silencio.'), nl,
+    (
+        miembro(usb, Inv) -> 
+        write('Traes el USB en la bolsa.')
+        ;
+        write('No traes el USB con las diapositivas.')
+    ), nl,
+    (
+        E >= 2 -> 
+        write('Te están sudando las manos por el estrés.')
+        ;
+        write('Estás bastante chill.')
+    ), nl.
+
+% --- Descripcion para el Estado Fin (Evita que el juego colapse al procesar el último turno) ---
+describir(estado(fin, _, _, _)) :- !.
 
 % «|» SECCIÓN 4 - acciones disponibles
 % lista de acciones en las que se puede hacer desde cada ubicación.
-
-
+accionesValidas(estado(fin, _, _, _), []) :- !.
 
 accionesValidas(estado(cuarto, Inv, Stats, _), Acciones) :-
     findall(A, accionDisponibleCuarto(Inv, Stats, A), Acciones).
@@ -265,14 +282,20 @@ accionDisponibleCafeteria(_, salirDeCafeteria).
 accionDisponibleCafeteria(_, hablarConEquipo).
 accionDisponibleCafeteria(_, tomarCafeCafeteria).
 
-accionesValidas(estado(entradaFacultad, _, _, _), Acciones) :-
-    findall(A, accionDisponibleFacultad(A), Acciones).
+% --- Acciones pasillo de la Facultad ---
+accionesValidas(estado(pasilloFacultad, Inv, stats(S, E, C), _), Acciones) :-
+    findall(A, accionDisponiblePasilloFacultad(Inv, stats(S, E, C), A), Acciones).
 
-accionDisponibleFacultad(irALabComputo).
-accionDisponibleFacultad(irABiblioteca).
-accionDisponibleFacultad(irACafeteria).
+accionDisponiblePasilloFacultad(_, _, entrarAlSalon).
+accionDisponiblePasilloFacultad(_, _, esperarAfuera) :- 
+    \+ visitado(esperoAfuera).
 
 
+% --- Acciones del salón de Vlad ---
+accionesValidas(estado(salonVlad, Inv, stats(S, E, C), _), Acciones) :-
+    findall(A, accionDisponibleSalon(Inv, stats(S, E, C), A), Acciones).
+
+accionDisponibleSalon(_, _, iniciarExposicion).
 
 % «|» SECCIÓN 5 - TRANSiciones
 % define cómo cambia el estado.
@@ -307,7 +330,7 @@ accion(estado(cuarto, Inv, stats(S, E, C), T), leerPapel,
 accion(estado(cuarto, Inv, stats(S, E, C), T), buscarUsb,
        estado(cuarto, Inv, stats(S, E1, C), T1)) :-
     \+ miembro(usb, Inv),
-    E1 is min(3, E + 1),   % sube estrés porque no lo encuentras
+    E1 is min(4, E + 1),   % sube estrés porque no lo encuentras
     T1 is T + 1,
     write('No está. El estrés sube.'), nl,
     write('[+ Estrés]'), nl.
@@ -316,7 +339,7 @@ accion(estado(cuarto, Inv, stats(S, E, C), T), tomarCafe,
        estado(cuarto, Inv, stats(S1, E1, C), T1)) :-
     miembro(cafe, Inv), E < 3,
     S1 is min(3, S + 1),
-    E1 is min(3, E + 1),
+    E1 is min(4, E + 1),
     T1 is T + 1,
     write('El café te activa. Te tiembla un poco la mano.'), nl,
     write('[+Sueño] [+Estrés]'), nl.
@@ -349,7 +372,7 @@ accion(estado(pasillo, Inv, stats(S, E, C), T), hablarConRodrigo,
        estado(pasillo, [rodrigoHablo | Inv], stats(S, E1, C), T1)) :-
     % Hablar con rodrigo te da una pista falsa sobre Vlad
     \+ miembro(rodrigoHablo, Inv),
-    E1 is min(3, E + 1),
+    E1 is min(4, E + 1),
     T1 is T + 1,
     write('"Se dice que Vlad canceló..." Rodrigo se va antes de que preguntes.'), nl,
     write('[+Estrés]'), nl.
@@ -385,7 +408,7 @@ accion(estado(tienda, Inv, stats(S, E, C), T), comprarCafeExtra,
     \+ miembro(cafeExtra, Inv),
     E < 3,  %Solo lo puedes comprar si tu estrés es menor a 3
     S1 is min(3, S + 1),  % El café sube el sueño y sube el estrés
-    E1 is min(3, E + 1),  
+    E1 is min(4, E + 1),  
     T1 is T + 1,
     write('Compras un café y te lo tomas casi hirviendo. Te da el boost que necesitabas.'), nl,
     write('[+ Sueño] [+ Estrés]'), nl.
@@ -479,7 +502,7 @@ accion(estado(cafeteria, Inv, stats(S, E, C), T), hablarConEquipo,
 accion(estado(cafeteria, Inv, stats(S, E, C), T), tomarCafeCafeteria,
        estado(cafeteria, Inv, stats(S1, E1, C), T1)) :-
     S1 is min(3, S + 1),
-    E1 is min(3, E + 1),
+    E1 is min(4, E + 1),
     T1 is T + 1,
     write('El café sabe a rayos pero te despierta.'), nl,
     write('[+ Sueño] [+ Estrés]'), nl.
@@ -488,7 +511,30 @@ accion(estado(cafeteria, Inv, Stats, T), salirDeCafeteria,
        estado(entradaFacultad, Inv, Stats, T1)) :-
     T1 is T + 1,
     write('Sales de la cafetería.'), nl.
-    
+
+% --- PASILLO FACULTAD ---
+
+accion(estado(pasilloFacultad, Inv, stats(S, E, C), T), esperarAfuera,
+       estado(pasilloFacultad, Inv, stats(S, E1, C1), T1)) :-
+    \+ visitado(esperoAfuera),
+    asserta(visitado(esperoAfuera)),
+    E1 is max(0, E - 1),
+    C1 is min(3, C + 1),
+    T1 is T + 1,
+    write('Te quedas un momento afuera repasando mentalmente, esto te calma un poco.'), nl,
+    write('[- Estrés] [+ Conocimiento]'), nl.
+
+accion(estado(pasilloFacultad, Inv, Stats, T), entrarAlSalon,
+       estado(salonVlad, Inv, Stats, T1)) :-
+    T1 is T + 1,
+    write('Abres la puerta y entras al salón, sabes que tu momento ha llegado.'), nl.
+
+% --- SALÓN DE VLAD ---
+
+accion(estado(salonVlad, Inv, stats(S, E, C), T), iniciarExposicion,
+       estado(fin, Inv, stats(S, E, C), T1)) :-
+    T1 is T + 1,
+    write('Te paras al frente, saludas al buen Vlad y te preparas para lo que viene.'), nl.
 
 % «|» SECCIÓN 6 - condiciones fin juego
 % Detectar el final y enseñar qué final mostrar
@@ -496,59 +542,90 @@ accion(estado(cafeteria, Inv, Stats, T), salirDeCafeteria,
 % El orden sí IMPORTA
 % Usamos ! al final para decirle q ya no siga buscando
 
+% Final A — Buenas condiciones generales
+finJuego(estado(fin, Inv, stats(_, E, C), T), finalA) :-
+    miembro(usb, Inv), 
+    E < 3, C >= 3, T =< 20, !,
+    nl,
+    write('=== FINAL A: Al fin descansas ==='), nl,
+    write('"Bien hecho." — Vlad cierra su libreta. Al fin puedes dormir y tu proyecto es un éxito.'), nl.
 
-% final secreto
-finJuego(estado(fin, Inv, stats(_, E, C), _), finalSecreto) :-
+% Final E — Final Secreto
+finJuego(estado(fin, Inv, stats(_, E, 2), _), finalE) :-
     miembro(pistaPapel, Inv),
     miembro(pistaConserje, Inv),
     miembro(pistaLab, Inv),
     miembro(usb, Inv),
-    C >= 2, E < 3, !,
+    E < 4, !,
     nl,
-    write('=== FINAL SECRETO: La conspiración de Vlad ==='), nl,
-    write('Antes de empezar, miras a Vlad. "¿Fuiste tú?"'), nl,
-    write('Vlad asiente lentamente. "El que no duerme merece llegar con todo."'), nl.
+    write('=== FINAL E: La conspiración de Vlad ==='), nl,
+    write('Antes de empezar, miras a Vlad. "¿Fuiste tú?", preguntas.'), nl,
+    write('Vlad asiente lentamente y sonríe de lado, él dice: "El que se esfuerza con todo, merece llegar con todo."'), nl.
 
-% Final A — buenas condiciones generales
-finJuego(estado(fin, Inv, stats(_, E, C), T), final_a) :-
-    miembro(usb, Inv), C >= 3, E < 3, T =< 20, !,
+% Final B — Exposición de memoria
+finJuego(estado(fin, Inv, stats(_, E, C), _), finalB) :-
+    \+ miembro(usb, Inv), 
+    E < 4, C >= 2, !,
     nl,
-    write('=== FINAL A: Al fin descasas ==='), nl,
-    write('"Bien hecho." — Vlad cierra su libreta. Al fin puedes dormir.'), nl.
+    write('=== FINAL B: Exposición de memoria ==='), nl,
+    write('No tienes el USB con las diapositivas, pero tú sabes que todo tu conocimiento te respalda.'), nl,
+    write('Expones de memoria, usas un plumón que te presta el buen Vlad y acabas sacando 9.'), nl.
 
-% Final C — mal estado
-finJuego(estado(fin, _, stats(_, 3, C), _), final_c) :-
+% Final F — Tramposo
+finJuego(estado(fin, Inv, stats(_, _, C), _), finalF) :-
+    miembro(hojaTrampa, Inv),
+    miembro(usb, Inv),
     C < 2, !,
     nl,
-    write('=== FINAL C: ._. ==='), nl,
-    write('Abres la boca. Nada. Vlad escribe algo en su libreta.'), nl.
+    write('=== FINAL F: Tramposin ==='), nl,
+    write('Usaste el USB y un acordeón para exponer, pero tú sabes que no te lo mereces, el buen Vlad se da cuenta y te quita puntos.'), nl,
+    write('Como todo el semestre hiciste trampa acabas yéndote a final.'), nl.
 
-% Final D — sin sueño
-finJuego(estado(fin, _, stats(0, _, _), _), final_d) :-
+% Final C — Mal estado
+finJuego(estado(fin, _, stats(_, E, C), _), finalC) :-
+    E >= 2, C < 2, !,
+    nl,
+    write('=== FINAL C: ._. ==='), nl,
+    write('Llegaste al salón bien estresado por no saber casi nada.'), nl,
+    write('Abres la boca y no sale nada. El buen Vlad se ve decepcionado y escribe algo en su libreta.'), nl,
+    write('Acabas yéndote a final.'), nl.
+
+% Final D — Sin sueño
+finJuego(estado(fin, _, stats(0, _, _), _), finalD) :-
     !,
     nl,
     write('=== FINAL D: Zzzzz ==='), nl,
-    write('Te quedas dormido antes de exponer. Vlad se fue hace una hora.'), nl.
+    write('Te quedas dormido antes de exponer, mientras tú babeas, el buen Vlad ya se fue hace una hora.'), nl,
+    write('Acabas yéndote a final.'), nl.
 
-% Final por defecto — siempre tiene éxito, atrapa todo lo demás
-finJuego(estado(fin, _, _, _), final_default) :-
-    nl,
-    write('=== FIN ==='), nl,
-    write('Sobreviviste. Casi no, pero lo hiciste. ¿O sólo fue un sueño?'), nl.
-
+% Final por defecto
+finJuego(estado(fin, _, _, _), finalDefault) :-
+    !,
+    nl, write('=== FIN ==='), nl,
+    write('Expusiste ni bien ni mal, pero lo hiciste. ¿O sólo fue un sueño?'), nl.
 
 % «|» SECCIÓN 7 - colapso inesperado
 % condiciones que pueden terminar el juego antes
 % colapso/1 revisa el estado después de CADA acción.
 % En ciclo/1 se llama antes de continuar
 
+% Colapso por Sueño
 colapso(estado(Ubi, _, stats(0, _, _), _)) :-
-    miembro(Ubi, [calle, entradaFacultad, labComputo, cafeteria]),
+    miembro(Ubi, [calle, entradaFacultad, labComputo, biblioteca, cafeteria, pasilloFacultad]),
+    !,
     nl,
-    write('*** Tus ojos se cierran solos en '), write(Ubi), write('. ***'), nl,
-    write('Te quedas dormido. La expo termina sin ti.'), nl.
+    write('*** Tus ojos se cierran solos en la locación: '), write(Ubi), write('. ***'), nl,
+    write('=== FINAL D: Zzzzz ==='), nl,
+    write('Te quedas dormido a mitad del camino y la expo termina sin ti y te vas a final.'), nl.
 
-
+% Colapso por Estrés
+colapso(estado(Ubi, _, stats(_, 4, _), _)) :-
+    miembro(Ubi, [calle, entradaFacultad, labComputo, biblioteca, cafeteria, pasilloFacultad]),
+    !,
+    nl,
+    write('*** El estrés te supera en la locación: '), write(Ubi), write('. ***'), nl,
+    write('Sientes que tu corazón se te sale, así que decides ir a la enfermería...'), nl,
+    write('No te dan un justificante y acabas yéndote a final.'), nl.
 
 % «|» SECCIÓN 8 - ciclo principal del juego
 % ciclo/1 es recursivo:
@@ -559,7 +636,6 @@ colapso(estado(Ubi, _, stats(0, _, _), _)) :-
 %      5. La procesa con procesar/3
 %      6. Llama a ciclo/1 con el nuevo estado (recursión)
 %
-
 
 jugar :-
     retractall(visitado(_)), % limpia memoria de visitas anteriores
@@ -590,8 +666,6 @@ ciclo(Estado) :-
     nl,
     read(Entrada),
     procesar(Estado, Entrada, Acciones).
-
-
 
 % «|» SECCIÓN 9 - procesador de entrada
 % procesar/3 tiene varias cláusulas para comandos especiales
@@ -645,7 +719,6 @@ procesar(Estado, Entrada, _) :-
 %    ?- estadoFinalPrueba(F), finJuego(F, Final).
 %    ?- pistasEn([pistaPapel, pistaLab], N).
 % ============================================================
-
 
 % devuelve las acciones disponibles en un estado dado
 movimientosValidos(Estado, Movimientos) :-
