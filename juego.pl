@@ -1,3 +1,32 @@
+:- use_module(library(lists)).
+
+% ==========================================
+%         LÓGICA DE EVALUACIÓN
+% ==========================================
+
+exactas([], [], 0).
+exactas([H|T1], [H|T2], N) :-
+    exactas(T1, T2, N1),
+    N is N1 + 1.
+exactas([H1|T1], [H2|T2], N) :-
+    H1 \= H2,
+    exactas(T1, T2, N).
+
+comunes([], _, 0).
+comunes([H|T], Secreto, N) :-
+    select(H, Secreto, RestoSecreto), !, 
+    comunes(T, RestoSecreto, N1),
+    N is N1 + 1.
+comunes([_|T], Secreto, N) :-
+    comunes(T, Secreto, N).
+
+evaluar_intento(Secreto, Intento, Negras, Blancas) :-
+    exactas(Secreto, Intento, Negras),
+    comunes(Intento, Secreto, TotalComunes),
+    Blancas is TotalComunes - Negras.
+
+    
+
 % ==========================================
 %     INTERFAZ
 % ==========================================
