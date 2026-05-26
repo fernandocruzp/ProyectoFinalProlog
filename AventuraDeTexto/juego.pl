@@ -278,9 +278,9 @@ accionDisponibleBiblioteca(_, repasarApuntes).
 accionesValidas(estado(cafeteria, Inv, stats(_, E, _), _), Acciones) :-
     findall(A, accionDisponibleCafeteria(Inv, E, A), Acciones).
 
-accionDisponibleCafeteria(_, salirDeCafeteria).
-accionDisponibleCafeteria(_, hablarConEquipo).
-accionDisponibleCafeteria(_, tomarCafeCafeteria).
+accionDisponibleCafeteria(_, _, salirDeCafeteria).
+accionDisponibleCafeteria(_, _, hablarConEquipo).
+accionDisponibleCafeteria(_, _, tomarCafeCafeteria).
 
 % --- Acciones pasillo de la Facultad ---
 accionesValidas(estado(pasilloFacultad, Inv, stats(S, E, C), _), Acciones) :-
