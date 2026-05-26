@@ -33,7 +33,7 @@ Para jugar a Loop, no se requiere interfaz gráfica (pero se agrego una minimali
 * **jugador_gana/2 y fin_juego/1:** Evalúan las condiciones de victoria y derrota. Si la función detecta que el jugador en turno cerró un triángulo, automáticamente declara ganador al jugador contrario.
 * **imprimir_tablero/1:** Toma el estado actual y dibuja en consola una matriz de adyacencia de 6x6 que representa visualmente el K6, marcando las casillas con "1" para el Jugador 1, "2" para el Jugador 2, o "." si están libres.
 
-## Ejemplo de sesión de juego
+## Ejemplo 1
 A continuación se muestra una simulación de partida desde la consola. En este ejemplo, el Jugador 1 comete un error en su tercer turno cerrando un triángulo entre los vértices 'a', 'b' y 'c', lo que le da la victoria al Jugador 2.
 
 ```prolog
@@ -60,3 +60,58 @@ A continuación se muestra una simulación de partida desde la consola. En este 
    
    % 8. Verificamos quién ganó
    jugador_gana(Ganador, EFinal).
+
+## Ejemplo 2
+A continuación se presenta una simulación de juego más larga, donde el J2 aplica la estrategia ganadora (dejar sus vertices con el menor grado de su color posible), forzando al jugador 1 a formar un triangulo.
+
+```prolog
+?- % 1. Estado inicial vacío (Turno J1)
+   E0 = estado(j1, [], []),
+
+   % 2. J1 inicia agresivo uniendo a-b
+   ejecutar_movimiento(E0, a, b, E1),
+
+   % 3. ESTRATEGIA J2: Responde de forma independiente en c-d para no saturar vértices
+   ejecutar_movimiento(E1, c, d, E2),
+
+   % 4. J1 intenta armar camino uniendo b-c (Amenaza cerrar el triángulo a-b-c)
+   ejecutar_movimiento(E2, b, c, E3),
+
+   % 5. ESTRATEGIA J2: Bloqueo inmediato. Toma a-c. El triángulo a-b-c queda neutralizado.
+   ejecutar_movimiento(E3, a, c, E4),
+
+   % 6. J1 insiste y busca abrir otra red uniendo a-d (Amenaza cerrar a-b-d)
+   ejecutar_movimiento(E4, a, d, E5),
+
+   % 7. ESTRATEGIA J2: Segundo bloqueo perfecto. Toma b-d. Red a-b-d neutralizada.
+   ejecutar_movimiento(E5, b, d, E6),
+
+   % 8. J1 expande su juego al vértice 'e' uniendo a-e (Amenaza cerrar b-a-e y d-a-e)
+   ejecutar_movimiento(E6, a, e, E7),
+
+   % 9. ESTRATEGIA J2: Tercer bloqueo. Toma b-e para quitarle una opción a J1.
+   ejecutar_movimiento(E7, b, e, E8),
+
+   % 10. J1 asegura c-e para mantener vivas sus conexiones.
+   ejecutar_movimiento(E8, c, e, E9),
+
+   % 11. ESTRATEGIA J2: J2 abre juego seguro hacia el vértice 'f' uniendo e-f.
+   ejecutar_movimiento(E9, e, f, E10),
+
+   % 12. J1 se desespera y conecta a-f (Creando múltiples amenazas futuras).
+   ejecutar_movimiento(E10, a, f, E11),
+
+   % 13. ESTRATEGIA J2 (Movimiento Maestro): J2 analiza el tablero y toma c-f. 
+   % Aquí se completa la trampa. J2 deja el tablero listo.
+   ejecutar_movimiento(E11, c, f, E12),
+
+   % 14. Imprimimos el estado del tablero en este punto crítico
+   imprimir_tablero(E12),
+
+   % 15. J1 está OBLIGADO a jugar. Intentemos cualquier movimiento restante:
+   % Opciones libres en el tablero: (b,f), (d,f) o (d,e).
+   % Si J1 elige (b, f)...
+   ejecutar_movimiento(E12, b, f, E13),
+
+   % 16. Evaluamos el resultado final
+   jugador_gana(Ganador, E13).
