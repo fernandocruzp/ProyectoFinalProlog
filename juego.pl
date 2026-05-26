@@ -25,7 +25,34 @@ evaluar_intento(Secreto, Intento, Negras, Blancas) :-
     comunes(Intento, Secreto, TotalComunes),
     Blancas is TotalComunes - Negras.
 
-    
+
+% ==========================================
+%         BÚFER
+% ==========================================
+
+patron_valido(Patron) :-
+    is_list(Patron),
+    length(Patron, 4).
+
+pedir_secreto(Secreto) :-
+    write('Introduce tu patron secreto de 4 colores: '), nl, % <--- TU SALTO DE LINEA AQUI
+    read(Input),
+    (   patron_valido(Input) -> 
+        Secreto = Input
+    ;   
+        write('>>> ERROR: Formato incorrecto. Coloca 4 colores dentro de corchetes.'), nl,
+        pedir_secreto(Secreto)
+    ).
+
+pedir_intento(Intento) :-
+    write('JUGADOR 2, Introduce tu intento: '), nl, % <--- TU SALTO DE LINEA AQUI
+    read(Input),
+    (   patron_valido(Input) -> 
+        Intento = Input
+    ;   
+        write('>>> ERROR: Formato incorrecto. Coloca 4 colores dentro de corchetes.'), nl,
+        pedir_intento(Intento)
+    ).
 
 % ==========================================
 %     INTERFAZ

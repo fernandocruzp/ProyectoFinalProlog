@@ -2,6 +2,11 @@
 
 Este proyecto contiene una implementacion interactiva del clasico juego MasterMind desarrollada en Prolog. El codigo del juego se encuentra en el archivo `juego.pl`.
 
+## Integrantes del Equipo
+
+1. Becerra Valencia César
+2. Cortes Nava Jose Luis
+
 ## Descripcion del Juego
 
 MasterMind es un juego de ingenio y reflexion en el que un jugador intenta descifrar un codigo secreto generado por la computadora.
