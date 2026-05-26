@@ -34,7 +34,11 @@ mostrar_tablero(Tablero) :-
 % Muestra una única fila del tablero.
 mostrar_fila(N, Tablero) :-
     nth1(N, Tablero, Cantidad),
-    format('Fila ~d: ', [N]),
+    ( Cantidad =:= 1 ->
+        format('Fila ~d (1 palillo):  ', [N])
+    ;
+        format('Fila ~d (~w palillos): ', [N, Cantidad])
+    ),
     escribir_palillos(Cantidad),
     nl.
 
