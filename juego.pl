@@ -158,6 +158,11 @@ pedir_intento(Intento) :-
 %   para resguardar el secreto, y finalmente arranca la secuencia de turnos de adivinación
 %   del Jugador 2 a partir del primer intento.
 iniciar_juego :-
+    write(' ||    ||     |      .|''''''|.   |''''||''''| ''||''''''''|  ''||''''|.   ''||    ||'' ''||'' ''|.   ''|'' ''||''''|.   '), nl,
+    write(' |||  |||     |||     ||..  ''     ||     ||  .     ||   ||   |||  |||   ||   |''|   |   ||   ||  '), nl,
+    write(' |''|..''||    |  ||     ''''|||.     ||     ||''''|     ||''''|''    |''|..''||   ||   | ''|. |   ||    || '), nl,
+    write(' | ''|'' ||   .''''''''|.  .     ''||    ||     ||        ||   |.   | ''|'' ||   ||   |   |||   ||    || '), nl,
+    write('.|. | .||. .|.  .||. |''....|''    .||.   .||.....| .||.  ''|'' .|. | .||. .||. .|.   ''|  .||...|'''), nl,
     write('--- BIENVENIDO A MASTERMIND (2 JUGADORES) ---'), nl,
     write('Colores sugeridos: rojo, azul, verde, amarillo, naranja, morado.'), nl,
     nl,
