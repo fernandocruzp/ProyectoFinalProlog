@@ -56,9 +56,9 @@ Una vez instalado SWI-Prolog, siga estos pasos para iniciar una partida:
    ```bash
    swipl juego.pl
    ```
-4. Una vez dentro de la consola interactiva de Prolog (indicada por el prompt `?-`), inicie el juego ejecutando el predicado `jugar.` seguido de un punto y presionando Enter:
+4. Una vez dentro de la consola interactiva de Prolog (indicada por el prompt `?-`), inicie el juego ejecutando el predicado `iniciar_juego.` seguido de un punto y presionando Enter:
    ```prolog
-   ?- jugar.
+   ?- iniciar_juego.
    ```
 
 ### Ejemplo de Partida

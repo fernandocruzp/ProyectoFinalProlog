@@ -47,22 +47,33 @@ patron_valido(Patron) :-
     colores_validos(Patron).
 
 pedir_secreto(Secreto) :-
-    write('Introduce tu patron secreto de 4 colores: '), nl, 
+    write('Introduce tu patron secreto de 4 colores.'), nl,
+    write('Debe estar en formato de lista de Prolog: entre corchetes, separados por comas y terminando con un punto.'), nl,
+    write('Ejemplo de formato: [rojo, verde, azul, amarillo].'), nl,
+    write('Colores permitidos: rojo, azul, verde, amarillo, naranja, morado.'), nl,
+    write('Seleccion: '), nl,
     read(Input),
     (   patron_valido(Input) -> 
         Secreto = Input
     ;   
-        write('>>> ERROR: Deben ser 4 colores validos (rojo, azul, verde, amarillo, naranja, morado) en corchetes.'), nl,
+        write('>>> ERROR: Formato incorrecto o colores invalidos.'), nl,
+        write('Asegurate de escribir 4 colores validos entre corchetes y terminar con un punto.'), nl,
+        write('Ejemplo: [rojo, verde, azul, amarillo].'), nl, nl,
         pedir_secreto(Secreto)
     ).
 
 pedir_intento(Intento) :-
-    write('JUGADOR 2, Introduce tu intento: '), nl, 
+    write('JUGADOR 2, introduce tu intento.'), nl,
+    write('Usa el formato Prolog: entre corchetes, separados por comas y terminando con punto.'), nl,
+    write('Ejemplo: [rojo, azul, verde, amarillo].'), nl,
+    write('Intento: '), nl,
     read(Input),
     (   patron_valido(Input) -> 
         Intento = Input
     ;   
-        write('>>> ERROR: Deben ser 4 colores validos (rojo, azul, verde, amarillo, naranja, morado) en corchetes.'), nl,
+        write('>>> ERROR: Formato incorrecto o colores invalidos.'), nl,
+        write('Asegurate de usar 4 colores validos (rojo, azul, verde, amarillo, naranja, morado).'), nl,
+        write('Recuerda usar corchetes y el punto final, ej: [rojo, verde, azul, amarillo].'), nl, nl,
         pedir_intento(Intento)
     ).
 
