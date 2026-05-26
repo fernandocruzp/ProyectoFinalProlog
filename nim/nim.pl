@@ -21,8 +21,11 @@ inicio :-
     % Tablero inicial: [3,5,7]
     juego([3,5,7], jugador1, jugador2).
 
-% mostrar_tablero
-% Imprime el estado actual del tablero
+% -----------------------------
+% Imprime el estado actual del juego.
+% Usa mostrar_fila/2 llamándolo secuencialmente para cada
+% una de las filas y así construir la representación visual completa.
+% -----------------------------
 mostrar_tablero(Tablero) :-
     nl,
     write('Estado actual del tablero:'), nl,
@@ -31,7 +34,12 @@ mostrar_tablero(Tablero) :-
     mostrar_fila(3, Tablero),
     nl.
 
-% Muestra una única fila del tablero.
+% -----------------------------
+% Extrae y formatea la información de una fila específica.
+% Utiliza nth1/3 para encontrar la cantidad exacta de palillos en la 
+% posición 'N' de la lista 'Tablero'. Después, imprime el número de 
+% la fila y usa a escribir_palillos/1 para el dibujo de los caracteres.
+% -----------------------------
 mostrar_fila(N, Tablero) :-
     nth1(N, Tablero, Cantidad),
     ( Cantidad =:= 1 ->
@@ -42,14 +50,26 @@ mostrar_fila(N, Tablero) :-
     escribir_palillos(Cantidad),
     nl.
 
-% Dibuja una representación visual de los palillos.
+% -----------------------------
+% Dibuja la representación gráfica de los palillos.
+%   Si la cantidad es 0, imprime el texto '(vacía)'.
+%   Si la cantidad es mayor a 0, utiliza un ciclo 
+%   forall/2 junto con between/3 para imprimir el caracter '| ' 
+%   tantas veces como indique la variable 'Cant'.
+% -----------------------------
 escribir_palillos(0) :- write('(vacía)').
 escribir_palillos(Cant) :-
     Cant > 0,
     forall(between(1, Cant, _), write('| ')).
 
-% tablero_vacio
-% Verdadero si todas las filas tienen 0 palillos
+% -----------------------------
+% Evalúa la condición de fin de juego.
+% Devuelve verdadero únicamente si todos los elementos de la lista son 0.
+% - Caso base: Una lista vacía [] ha sido verificada por completo.
+% - Caso recursivo: Si la cabeza de la lista es 0 ([0|Resto]), 
+%   se llama a sí mismo para verificar el 'resto' de la lista. 
+%   Falla si encuentra un número distinto de 0.
+% -----------------------------
 tablero_vacio([]).
 tablero_vacio([0|Resto]) :- tablero_vacio(Resto).
 
