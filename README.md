@@ -37,6 +37,7 @@ Al realizar un movimiento válido, todas las fichas enemigas que queden atrapada
 * estado_ganador/2: Aplica un corte (!) y evalúa la condición de fin de juego cuando movimientos_validos/3 arroja listas vacías para ambos jugadores en el estado actual del tablero. Posteriormente cuenta el total de piezas de cada bando y unifica la variable del ganador.
 
 ## Ejemplo de ejecución
+```prolog
 ?- consult('juego.pl').
 true.
 
@@ -70,3 +71,4 @@ Introduce tu movimiento "Fila-Columna." (ej. 3-4.): 3-4.
 Turno del jugador w (X = Negras, O = Blancas).
 Movimientos validos: [(3,3),(3,5),(5,3)]
 Introduce tu movimiento "Fila-Columna." (ej. 3-4.):
+```
