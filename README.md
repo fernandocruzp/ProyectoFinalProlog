@@ -1,1 +1,5 @@
-Realizar fork al repositorio e incluir nueva carpeta con el nombre del juego escogido, así como la lista de nombres del equipo
+# Proyecto Final Prolog.
+
+Este es un recopilado de juegos programados en Prolog realizado por los alumnos del curso de Lógica Computacional de la Facultad de Ciencias.
+
+Todo el código es propiedad de los alumnos.
